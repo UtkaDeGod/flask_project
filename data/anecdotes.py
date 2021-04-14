@@ -15,7 +15,7 @@ class Anecdote(SqlAlchemyBase):
     rating = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     is_published = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
-    created_user = orm.relation('User')
+    creator = orm.relation('User')
     category = orm.relation('Category')
 
     comments = orm.relation("Comment", back_populates='anecdote')

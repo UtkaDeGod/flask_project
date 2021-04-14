@@ -12,5 +12,12 @@ class AnecdotesResource(Resource):
     def get(self):
         db_sess = db_session.create_session()
         rand_id = random.choice(db_sess.query(Anecdote.id))
+        if not rand_id:
+            return make_response(jsonify({"error": "anecdote not found"}), 404)
         anecdote = db_sess.query(Anecdote).get(rand_id)
-        return make_response({"anecdote_text": anecdote.text})
+        return make_response(jsonify({"anecdote_text": anecdote.text,
+                                      "rating": anecdote.rating,
+                                      "anecdote_name": anecdote.name,
+                                      "category": anecdote.category.title,
+                                      "date": str(anecdote.created_date),
+                                      "creator_name": anecdote.creator.name}), 200)
