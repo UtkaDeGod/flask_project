@@ -7,6 +7,7 @@ class Anecdote(SqlAlchemyBase):
     __tablename__ = 'anecdotes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     text = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     created_user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
