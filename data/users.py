@@ -15,8 +15,8 @@ class User(SqlAlchemyBase, UserMixin):
     picture_path = sqlalchemy.Column(sqlalchemy.String, default='pic_path.png')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
-    anecdotes = orm.relation('Anecdote', back_populates='created_user')
-    comments = orm.relation('Comment', back_populates='comment')
+    anecdotes = orm.relation('Anecdote', back_populates='user')
+    comments = orm.relation('Comment', back_populates='user')
     likes = orm.relation('Like', back_populates='user')
 
     def set_password(self, password):
