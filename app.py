@@ -1,14 +1,18 @@
 from flask import Flask, redirect, render_template
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user, login_required
 from data.db_session import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from data import anecdotes_resource
 from flask_restful import Api
+from data.anecdotes import Anecdote
+from math import ceil
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'aleksey_lox))))_228'
+
 api = Api(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -18,6 +22,13 @@ login_manager.init_app(app)
 def load_user(user_id):
     db_sess = create_session()
     return db_sess.query(User).get(user_id)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -44,15 +55,37 @@ def register():
             return render_template('register.html', message='Пароли не совпадают', **context)
         if form.email.data in [user.email for user in db_sess.query(User).all()]:
             return render_template('register.html', message='Email уже занят', **context)
-        if len(form.hashed_password.data) >= 8 and form.hashed_password.data.isalnum():
+        if len(form.hashed_password.data) < 8 or not form.hashed_password.data.isalnum():
             return render_template('register.html', message='Пароль должен состоять из букв и цифр', **context)
-
         user = User(name=form.name.data, email=form.email.data)
         user.set_password(form.hashed_password.data)
         db_sess.add(user)
         db_sess.commit()
-        redirect('/')
+        return redirect('/login')
     return render_template('register.html', **context)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return redirect('/1')
+
+
+@app.route('/<int:page>', methods=['GET', 'POST'])
+def index_with_pagination(page):
+    db_sess = create_session()
+    ON_PAGE_COUNT = 20
+    pages_count = ceil(len(db_sess.query(Anecdote).all()) / ON_PAGE_COUNT)
+    if pages_count >= 7:
+        pagination = [str(page)]
+        if page != 1:
+            pagination = (['1', '...'] if page != 2 else []) + [str(page - 1)] + pagination
+        if page != pages_count:
+            pagination = pagination + ([str(page + 1), '...'] if page != pages_count - 1 else []) + [str(pages_count)]
+        pagination = ['Previous'] + pagination + ['Next']
+    else:
+        pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
+    anecdotes = db_sess.query(Anecdote).offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
+    return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count)
 
   
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
@@ -60,5 +93,5 @@ api.add_resource(anecdotes_resource.AnecdotesListResource, "/anecdotes/page")
 api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")
 
 if __name__ == '__main__':
-    db_session.global_init('db/anecdotes.db')
+    global_init('db/anecdotes.db')
     app.run(port=5000, host='127.0.0.2')

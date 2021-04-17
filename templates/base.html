@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>анекдоты от алексея</title>
+    <title>Анекдоты от алексея</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
             crossorigin="anonymous"></script>
@@ -31,22 +31,29 @@
                 <input class="form-control me-2" type="search" placeholder="Поиск анекдота" aria-label="Search">
                 <button class="btn btn-warning" type="submit">Искать</button>
             </form>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ avatar }}" alt="" width="50" height="30" style="border-radius: 50%"
-                         class="d-inline-block align-text-top img-thumbnail">
-                    {{ UserName }}
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Мой профиль</a></li>
-                    <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Лайкнутые</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Выйти</a></li>
-                </ul>
-            </li>
+            {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ current_user.picture_path }}" alt="" width="50" height="30" style="border-radius: 50%"
+                             class="d-inline-block align-text-top img-thumbnail">
+                        {{ current_user.name }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Мой профиль</a></li>
+                        <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Лайкнутые</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="nav-item dropdown">
+                    <a class="btn btn-warning" href="/login">Войти</a>
+                    <a class="btn btn-warning" href="/register">Зарегистрировться</a>
+                </li>
+            {% endif %}
         </div>
     </div>
 </nav>

@@ -5,96 +5,48 @@
     <div class="col">
         <ul>
             {% for anecdote in anecdotes %}
-            <li>
                 <!-- блок анекдота -->
-                <div class="joke">
-                    <img src="{{ anecdote.creator.picture_path }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                    <label for="ava" style="font-size:150%">{{ anecdote.creator.name }}</label>
-                    <p>{{ anecdote.text }}</p>
-                </div>
+                <li>
+                    <div class="joke">
+                        <img src="{{ anecdote.user.picture_path }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+                        <p>{{ anecdote.text }}</p>
+                    </div>
 
-            </li>
-            <br>
-            <li>
-                <div class="joke">
-                    <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                    <label for="ava" style="font-size:150%">Лёха</label>
-                    <p>После того как омоновцев стали называть космонавтами словосочетание космический мусор для
-                        меня заиграло новыми красками.</p>
-                </div>
-            </li>
+                </li>
+                <br>
+            {% endfor %}
         </ul>
     </div>
-    <div class="col col-lg-2">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                style="height:50px;width:200px">
-            Добавить анекдот
-        </button>
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form action="" method="post" novalidate>
 
-                        {{ form.hidden_tag() }}
-
-                        <div class="modal-header">
-                            {{ form.name.label }}<br>
-                            {{ form.name(class="form-control") }}<br>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            {{ form.text.label }}<br>
-                            {{ form.text(class="form-control", style="height:300px;width:470px") }}<br>
-                        </div>
-
-                        <div class="modal-footer">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger dropdown-toggle"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Категории
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>{{ form.category_black(class="form-check-input") }}
-                                        {{ form.category_black.label }}<br></li>
-                                    <li>{{ form.category_tuolet(class="form-check-input") }}
-                                        {{ form.category_tuolet.label }}<br></li>
-                                    <li>{{ form.category_censure(class="form-check-input") }}
-                                        {{ form.category_censure.label }}<br></li>
-                                </ul>
-                            </div>
-                            {{ form.submit(type="submit", class="btn btn-primary") }}
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <br>
-        <br>
-        <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
-                            style="height:50px;width:200px">
-                        Категории
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                     data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <a href="https://www.youtube.com/watch?v=v8lJ8QmdgrI">Чёрный юмор</a>
-                        <br>
-                        <a href="https://www.youtube.com/watch?v=v8lJ8QmdgrI">Туолетный юмор</a>
-                        <br>
-                        <a href="https://www.youtube.com/watch?v=v8lJ8QmdgrI">Матерный юмор</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% for button in pagination %}
+                    {% if button != '...' and button not in ['Next', 'Previous'] %}
+                        {% if page == button|int %}
+                           <li class="page-item active"><a class="page-link" href="/{{ button }}">{{ button }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="/{{ button }}">{{ button }}</a></li>
+                        {% endif %}
+                    {% elif button == '...' %}
+                        <li class="page-item disabled"><a class="page-link">{{ button }}</a></li>
+                    {% elif button == 'Next' %}
+                        {% if page == pages_count %}
+                            <li class="page-item disabled"><a class="page-link">{{ button }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="/{{ page + 1 }}">{{ button }}</a></li>
+                        {% endif %}
+                    {% elif button == 'Previous' %}
+                        {% if page == 1 %}
+                            <li class="page-item disabled"><a class="page-link">{{ button }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="/{{ page - 1 }}">{{ button }}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
     </div>
 </div>
 {% endblock %}

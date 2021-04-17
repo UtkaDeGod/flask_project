@@ -12,7 +12,7 @@ class User(SqlAlchemyBase, UserMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    picture_path = sqlalchemy.Column(sqlalchemy.String, default='pic_path.png')
+    picture_path = sqlalchemy.Column(sqlalchemy.String, default='static/img/default.jpg')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     anecdotes = orm.relation('Anecdote', back_populates='user')
