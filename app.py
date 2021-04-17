@@ -4,9 +4,12 @@ from data.db_session import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
+from data anecdotes_resource
+from flask_restful import Api
 
 
 app = Flask(__name__)
+api = Api(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -50,3 +53,12 @@ def register():
         db_sess.commit()
         redirect('/')
     return render_template('register.html', **context)
+
+  
+api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
+api.add_resource(anecdotes_resource.AnecdotesListResource, "/anecdotes/page")
+api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")
+
+if __name__ == '__main__':
+    db_session.global_init('db/anecdotes.db')
+    app.run(port=5000, host='127.0.0.2')
