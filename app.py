@@ -4,7 +4,7 @@ from data.db_session import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
-from data anecdotes_resource
+from data import anecdotes_resource
 from flask_restful import Api
 
 
