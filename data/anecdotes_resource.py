@@ -17,9 +17,12 @@ DELTAS = {
 class AnecdotesResource(Resource):
     def get(self):
         db_sess = db_session.create_session()
-        rand_id = random.choice(db_sess.query(Anecdote.id))
-        if not rand_id:
+
+        ids = db_sess.query(Anecdote.id).all()
+        if not ids:
             return make_response(jsonify({"error": "anecdote not found"}), 404)
+
+        rand_id = random.choice(ids)
         anecdote = db_sess.query(Anecdote).get(rand_id)
         return make_response(jsonify({"anecdote_text": anecdote.text,
                                       "rating": anecdote.rating,
@@ -40,13 +43,19 @@ class AnecdotesListResource(Resource):
             page = request.json["page"]
             anecdotes = db_sess.query(Anecdote).offset((page - 1) * 20).limit(20).all()
             return make_response(jsonify({"anecdotes": anecdotes}), 200)
-        except Exception:
-            return make_response(jsonify({"error": "validation error"}, 400))
+        except Exception as e:
+            return make_response(jsonify({"error": "validation error"}), 400)
 
 
 class AnecdotesTopResource(Resource):
     def get(self):
         db_sess = db_session.create_session()
+
+        if not request.json:
+            anecdotes = db_sess.query(Anecdote). \
+                order_by(Anecdote.rating.desc()).limit(10).all()
+            return make_response(jsonify({"anecdotes": anecdotes}),
+                                 200)
 
         size = request.json.get("size", 10)
         if not isinstance(size, int):

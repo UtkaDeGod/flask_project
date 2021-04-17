@@ -12,4 +12,4 @@ api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")
 
 if __name__ == '__main__':
     db_session.global_init('db/anecdotes.db')
-    app.run(port=8080, host='0.0.0.0')
+    app.run(port=5000, host='127.0.0.2')
