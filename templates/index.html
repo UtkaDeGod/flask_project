@@ -1,30 +1,16 @@
-{% extends "main_shablon.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="row">
     <div class="col">
         <ul>
+            {% for anecdote in anecdotes %}
             <li>
                 <!-- блок анекдота -->
                 <div class="joke">
-                    <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                    <label for="ava" style="font-size:150%">Лёха</label>
-                    <p>После того как омоновцев стали называть космонавтами словосочетание космический мусор для
-                        меня заиграло новыми красками.</p>
-                    <form>
-                        <button>
-                            <img src="{{ url_for('static', filename='img/heart.png') }}" style=width="20"
-                                 height="20" id="like">
-                        </button>
-                        <label for="like" style="font-size:150%">0</label>
-
-                        <button>
-                            <img src="{{ url_for('static', filename='img/dislike.png') }}" style=width="20"
-                                 height="20" id="dislike">
-                        </button>
-                        <label for="dislike" style="font-size:150%">0</label>
-                    </form>
-
+                    <img src="{{ anecdote.creator.picture_path }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                    <label for="ava" style="font-size:150%">{{ anecdote.creator.name }}</label>
+                    <p>{{ anecdote.text }}</p>
                 </div>
 
             </li>
