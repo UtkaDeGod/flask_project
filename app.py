@@ -1,12 +1,15 @@
 from flask import Flask, redirect, render_template
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data.db_session import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
+from forms.add_anecdote_form import AddAnecdoteForm
 from data import anecdotes_resource
 from flask_restful import Api
 from data.anecdotes import Anecdote
+from data.categories import Category
+from datetime import datetime
 from math import ceil
 
 
@@ -84,8 +87,24 @@ def index_with_pagination(page):
         pagination = ['Previous'] + pagination + ['Next']
     else:
         pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
-    anecdotes = db_sess.query(Anecdote).offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
+    anecdotes = db_sess.query(Anecdote).order_by(Anecdote.created_date.desc()).\
+        offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
     return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count)
+
+
+@app.route('/add_anecdote', methods=['GET', 'POST'])
+@login_required
+def add_anecdote():
+    db_sess = create_session()
+    form = AddAnecdoteForm()
+    form.category.choices = [(category.id, category.title) for category in db_sess.query(Category).all()]
+    if form.validate_on_submit():
+        anecdote = Anecdote(category_id=form.category.data, created_date=datetime.now(),
+                            name=form.name.data, text=form.text.data, user_id=current_user.id)
+        db_sess.add(anecdote)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('add_anecdote.html', form=form)
 
   
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
