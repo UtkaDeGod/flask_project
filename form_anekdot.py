@@ -6,7 +6,5 @@ from wtforms.validators import DataRequired
 class AddAnecdoteForm(FlaskForm):
     name = StringField('Название анекдота', validators=[DataRequired()])
     text = TextAreaField('Текст анекдота', validators=[DataRequired()])
-    category_black = BooleanField('Чёрный юмор', validators=[DataRequired()])
-    category_tuolet = BooleanField('Туолетный юмор', validators=[DataRequired()])
-    category_censure = BooleanField('Матерный юмор', validators=[DataRequired()])
+    add_category = StringField('Название анекдота', validators=[DataRequired()])
     submit = SubmitField('Добавить')
