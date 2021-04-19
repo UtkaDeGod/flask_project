@@ -11,19 +11,31 @@
                     <label for="ava" style="font-size:150%">Лёха</label>
                     <p>После того как омоновцев стали называть космонавтами словосочетание космический мусор для
                         меня заиграло новыми красками.</p>
-                    <form>
-                        <button>
-                            <img src="{{ url_for('static', filename='img/heart.png') }}" style=width="20"
-                                 height="20" id="like">
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
+                    <form method="post" id="form" action="">
+                        <input type="hidden" name="appraisal" value="1">
+                        <button type="submit" id="like">
+                            <img src="{{ url_for('static', filename='img/heart.png') }}" width="20" height="20">
                         </button>
-                        <label for="like" style="font-size:150%">0</label>
-
-                        <button>
-                            <img src="{{ url_for('static', filename='img/dislike.png') }}" style=width="20"
-                                 height="20" id="dislike">
-                        </button>
-                        <label for="dislike" style="font-size:150%">0</label>
+                        <label for="like">0</label>
+                        <div class="field"></div>
                     </form>
+
+                    <form method="post" id="form" action="">
+                        <input type="hidden" name="appraisal" value="0">
+                        <button type="submit" id="dislike">
+                            <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
+                        </button>
+                        <label for="dislike">0</label>
+                        <div class="field"></div>
+                    </form>
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
+                    <!-- лайки и дизлайки -->
 
                 </div>
 
@@ -72,12 +84,17 @@
                                     Категории
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li>{{ form.category_black(class="form-check-input") }}
-                                        {{ form.category_black.label }}<br></li>
-                                    <li>{{ form.category_tuolet(class="form-check-input") }}
-                                        {{ form.category_tuolet.label }}<br></li>
-                                    <li>{{ form.category_censure(class="form-check-input") }}
-                                        {{ form.category_censure.label }}<br></li>
+                                    {% for name_category in category %}
+                                    <li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                   id="{{ name_category }}">
+                                            <label class="form-check-label" for="{{ name_category }}">
+                                                {{ name_category }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
                             {{ form.submit(type="submit", class="btn btn-primary") }}

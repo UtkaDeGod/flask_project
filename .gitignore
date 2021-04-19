@@ -154,3 +154,6 @@ dmypy.json
 cython_debug/
 >>>>>>> 235c149... html
 .idea
+test.py
+test.html
+test2.html
