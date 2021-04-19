@@ -58,7 +58,9 @@ def register():
             return render_template('register.html', message='Пароли не совпадают', **context)
         if form.email.data in [user.email for user in db_sess.query(User).all()]:
             return render_template('register.html', message='Email уже занят', **context)
-        if len(form.hashed_password.data) < 8 or not form.hashed_password.data.isalnum():
+        if len(form.hashed_password.data) < 8:
+            return render_template('register.html', message='Длина пароля должна быть не менее 8 символов', **context)
+        if not form.hashed_password.data.isalnum():
             return render_template('register.html', message='Пароль должен состоять из букв и цифр', **context)
         user = User(name=form.name.data, email=form.email.data)
         user.set_password(form.hashed_password.data)
@@ -105,6 +107,12 @@ def add_anecdote():
         db_sess.commit()
         return redirect('/')
     return render_template('add_anecdote.html', form=form)
+
+
+@app.route('/admin', methods=['GET'])
+@login_required
+def admin_panel():
+    pass
 
   
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
