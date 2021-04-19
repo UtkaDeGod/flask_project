@@ -1,5 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect
-from form_anekdot import AddAnecdoteForm
+from flask import Flask, render_template, url_for, request
+from forms.form_anekdot import AddAnecdoteForm
 
 app = Flask(__name__)
 

@@ -1,5 +1,6 @@
 db/anecdotes.db
 test.py
+main.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
