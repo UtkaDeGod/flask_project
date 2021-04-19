@@ -1,10 +1,14 @@
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data.db_session import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from forms.add_anecdote_form import AddAnecdoteForm
+from forms.search_user_form import SearchUserForm
+from forms.search_category_form import SearchCategoryForm
+from forms.form_anekdot import AddAnecdoteForm as Chto_to
+from forms.admin_user_edit_form import AdminUserEditForm
 from data import anecdotes_resource
 from flask_restful import Api
 from data.anecdotes import Anecdote
@@ -19,6 +23,17 @@ app.config['SECRET_KEY'] = 'aleksey_lox))))_228'
 api = Api(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+def search_users(db_sess, line=''):
+    users = db_sess.query(User).filter(User.name.like(f'%{line}%')).all()
+    for i, user in enumerate(users):
+        form = AdminUserEditForm()
+        for key in ['id', 'is_admin', 'is_banned']:
+            setattr(getattr(form, key), 'data', getattr(user, key))
+        users[i] = (user.id, (user, form))
+    return dict(users)
+
 
 
 @login_manager.user_loader
@@ -109,10 +124,30 @@ def add_anecdote():
     return render_template('add_anecdote.html', form=form)
 
 
-@app.route('/admin', methods=['GET'])
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin_panel():
-    pass
+    search_user_form = SearchUserForm()
+    search_category_form = SearchCategoryForm()
+    form = Chto_to()    
+    db_sess = create_session()
+    users = search_users(db_sess)
+
+    if search_user_form.validate_on_submit():
+        users = search_users(db_sess, search_user_form.search_user.data)
+    if request.method == 'POST':
+        user_id = request.form.get('id', None)
+        user_id = int(user_id) if isinstance(user_id, str) else user_id
+        is_admin = request.form.get('is_admin', None) == 'y'
+        is_banned = request.form.get('is_banned', None) == 'y'
+        if isinstance(user_id, int):
+            user = db_sess.query(User).get(user_id)
+            user.is_admin, user.is_banned = is_admin, is_banned
+            db_sess.commit()
+            return redirect('/admin')
+    context = {'search_user_form': search_user_form, 'search_category_form': search_category_form, 
+               'form': form, 'users': users}
+    return render_template('admin.html', **context)
 
   
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")

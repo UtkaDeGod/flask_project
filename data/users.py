@@ -14,6 +14,7 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     picture_path = sqlalchemy.Column(sqlalchemy.String, default='static/img/default.jpg')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    is_banned = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     anecdotes = orm.relation('Anecdote', back_populates='user')
     comments = orm.relation('Comment', back_populates='user')

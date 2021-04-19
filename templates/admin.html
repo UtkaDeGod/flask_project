@@ -1,52 +1,37 @@
-{% extends "main_shablon.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="row">
     <div class="col">
         <form action="" method="post" novalidate>
-            {{ search_form.search_user() }}
-            <button type="submit" class="btn btn-success">Поиск</button>
+            {{ search_user_form.hidden_tag() }}
+            <p>
+                {{ search_user_form.search_user() }}
+                {{ search_user_form.submit(type="submit", class="btn btn-success") }}
+            </p>
         </form>
+        {% for user, user_form in users.values() %}
+            <p>
+                <div class="joke">
+                    <form method="post" id="form" action="">
+                        {{ user_form.hidden_tag() }}
+                        <p>
+                            <img src="{{ user.picture_path }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                            <label for="ava" style="font-size:150%">{{ user.name }}</label>
 
-        <div class="joke">
-            <form method="post" id="form" action="">
-                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                <label for="ava" style="font-size:150%">{{ UserName }}</label>
-
-                <input type="hidden" name="user_id" value="{{ user_id }}">
-
-                {% if flag_test %}
-                <input type="checkbox" id="is_admin" checked name="admin" value="on">
-                {% else %}
-                <input type="checkbox" id="is_admin" name="admin" value="on">
-                {% endif %}
-                <label for="is_admin">админ</label>
-
-                {% if flag_test %}
-                <input type="checkbox" id="is_ban" checked name="ban" value="on">
-                {% else %}
-                <input type="checkbox" id="is_ban" name="ban" value="on">
-                {% endif %}
-                <label for="is_admin">блокировка</label>
-
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
-                    Подтвердить
-                </button>
-                <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="submit" class="btn btn-primary">подтвердить</button>
-                        </div>
-                    </div>
+                            {{ user_form.id(type="hidden") }}
+                            {{ user_form.is_admin(type="checkbox") }} админ
+                            {{ user_form.is_banned(type="checkbox") }} забанен
+                            {{ user_form.submit(type="submit", class="btn btn-primary") }}
+                        </p>
+                    </form>
                 </div>
-            </form>
-
-        </div>
+            </p>
+        {% endfor %}
     </div>
     <div class="col">
         <form action="" method="post" novalidate>
-            {{ search_form.search_category() }}
+            {{ search_category_form.search_category() }}
             <button type="submit" class="btn btn-success">Поиск</button>
         </form>
 
