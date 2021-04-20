@@ -11,7 +11,7 @@ class Anecdote(SqlAlchemyBase):
     text = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
-    category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'), nullable=False)
+    category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'))
     rating = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     is_published = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 

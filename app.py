@@ -5,17 +5,18 @@ from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from forms.add_anecdote_form import AddAnecdoteForm
+from forms.add_category_form import AddCategoryForm
+from forms.delete_category_form import DeleteCategoryForm
 from forms.search_user_form import SearchUserForm
 from forms.search_category_form import SearchCategoryForm
-from forms.form_anekdot import AddAnecdoteForm as Chto_to
 from forms.admin_user_edit_form import AdminUserEditForm
+from forms.user_data_form import UserDataForm
 from data import anecdotes_resource
 from flask_restful import Api
 from data.anecdotes import Anecdote
 from data.categories import Category
 from datetime import datetime
 from math import ceil
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'aleksey_lox))))_228'
@@ -35,11 +36,22 @@ def search_users(db_sess, line=''):
     return dict(users)
 
 
+def search_categories(db_sess, line=''):
+    categories = db_sess.query(Category).filter(Category.title.like(f'%{line}%')).all()
+    for i, category in enumerate(categories):
+        form = DeleteCategoryForm()
+        form.id.data = category.id
+        categories[i] = (category.id, (category, form))
+    return dict(categories)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = create_session()
-    return db_sess.query(User).get(user_id)
+    user = db_sess.query(User).get(user_id)
+    if user is None or not user.is_banned:
+        return user
+    return None
 
 
 @app.route('/logout')
@@ -104,7 +116,7 @@ def index_with_pagination(page):
         pagination = ['Previous'] + pagination + ['Next']
     else:
         pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
-    anecdotes = db_sess.query(Anecdote).order_by(Anecdote.created_date.desc()).\
+    anecdotes = db_sess.query(Anecdote).order_by(Anecdote.created_date.desc()). \
         offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
     return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count)
 
@@ -124,17 +136,16 @@ def add_anecdote():
     return render_template('add_anecdote.html', form=form)
 
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin/edit_users', methods=['GET', 'POST'])
 @login_required
-def admin_panel():
+def admin_edit_users():
     search_user_form = SearchUserForm()
-    search_category_form = SearchCategoryForm()
-    form = Chto_to()    
     db_sess = create_session()
     users = search_users(db_sess)
 
     if search_user_form.validate_on_submit():
         users = search_users(db_sess, search_user_form.search_user.data)
+
     if request.method == 'POST':
         user_id = request.form.get('id', None)
         user_id = int(user_id) if isinstance(user_id, str) else user_id
@@ -144,12 +155,52 @@ def admin_panel():
             user = db_sess.query(User).get(user_id)
             user.is_admin, user.is_banned = is_admin, is_banned
             db_sess.commit()
-            return redirect('/admin')
-    context = {'search_user_form': search_user_form, 'search_category_form': search_category_form, 
-               'form': form, 'users': users}
-    return render_template('admin.html', **context)
+            return redirect(f'/admin/edit_users#{user.id}')
+    context = {'search_user_form': search_user_form, 'users': users}
+    return render_template('admin_edit_users.html', **context)
 
-  
+
+@app.route('/admin/edit_categories', methods=['GET', 'POST'])
+@login_required
+def admin_edit_categories():
+    search_category_form = SearchCategoryForm()
+    delete_category_form = DeleteCategoryForm()
+    add_category_form = AddCategoryForm()
+    db_sess = create_session()
+    categories = search_categories(db_sess)
+
+    if search_category_form.validate_on_submit():
+        categories = search_categories(db_sess, search_category_form.search_category.data)
+
+    if request.method == 'POST' and request.form.get('action', None) == 'delete_category':
+        category_id = request.form.get('id', None)
+        category_id = int(category_id) if isinstance(category_id, str) else category_id
+        if isinstance(category_id, int):
+            category = db_sess.query(User).get(category_id)
+            if all([anecdote.category != category for anecdote in db_sess.query(Anecdote).all()]):
+                db_sess.delete(category)
+                db_sess.commit()
+            return redirect('/admin/edit_categories')
+
+    if request.method == 'POST' and request.form.get('action', None) == 'add_category':
+        title = request.form.get('title')
+        if isinstance(title, str) and title != '':
+            category = Category(title=title)
+            db_sess.add(category)
+            db_sess.commit()
+            return redirect(f'/admin/edit_categories#{category.id}')
+    context = {'search_category_form': search_category_form, 'delete_category_form': delete_category_form,
+               'add_category_form': add_category_form, 'categories': categories}
+    return render_template('admin_edit_categories.html', **context)
+
+
+@app.route('/user_profile')
+@login_required
+def user_profile():
+    user_data_form = UserDataForm()
+    return render_template('user_profile.html', user_data=user_data_form)
+
+
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
 api.add_resource(anecdotes_resource.AnecdotesListResource, "/anecdotes/page")
 api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")

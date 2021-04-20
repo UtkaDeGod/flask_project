@@ -1,7 +1,7 @@
-from flask import Flask, render_template, url_for, request, redirect
-from form_anekdot import AddAnecdoteForm
-from search_form import SearchForm
-from user_data_form import UserData
+from flask import Flask, render_template, url_for, request
+from flask_login import login_required
+
+from forms.user_data_form import UserData
 from PIL import Image
 import os
 
@@ -12,23 +12,18 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/login', methods=['GET', 'POST'])
+@login_required
 def login():
-    form = AddAnecdoteForm()
-    search_form = SearchForm()
     user_data = UserData()
     param = {"UserName": "Алёшка",
              "userid": "228ff",
              "name": "loh",
              "email": "fff@mail.com",
              "content": "fghgfd",
-             "search_form": search_form,
-             "form": form,
              "user_data": user_data,
              "avatar": url_for('static', filename='img/gg.jpg')}
 
-    if request.method == 'GET':
-        return render_template('user_page.html', **param)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # сохранение картинки
         uid = request.form["userid"]
         f = user_data.avatar.data
@@ -43,7 +38,7 @@ def login():
             corr = (height - width) // 2
             im = im.crop((0, corr, width, corr + width))
         im.save(os.path.join("instance/avatars", filename))
-        return render_template('user_page.html', **param)
+    return render_template('user_profile.html', **param)
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ current_user.picture_path }}" alt="" width="50" height="30" style="border-radius: 50%"
+                        <img src="{{ url_for('static', filename=current_user.picture_path) }}" alt="" width="50" height="30" style="border-radius: 50%"
                              class="d-inline-block align-text-top img-thumbnail">
                         {{ current_user.name }}
                     </a>

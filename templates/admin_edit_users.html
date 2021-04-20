@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <form action="" method="post" novalidate>
+            {{ search_user_form.hidden_tag() }}
+            <p>
+                {{ search_user_form.search_user() }}
+                {{ search_user_form.submit(type="submit", class="btn btn-success") }}
+            </p>
+        </form>
+        {% for user, user_form in users.values() %}
+            <p>
+                <div class="joke" id="{{ user.id }}">
+                    <form method="post" id="form" action="">
+                        {{ user_form.hidden_tag() }}
+                        <p>
+                            <img src="{{ url_for('static', filename=user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                            <label for="ava" style="font-size:150%">{{ user.name }}</label>
+
+                            {{ user_form.id(type="hidden") }}
+                            {{ user_form.is_admin(type="checkbox") }} админ
+                            {{ user_form.is_banned(type="checkbox") }} забанен
+                            {{ user_form.submit(type="submit", class="btn btn-primary") }}
+                        </p>
+                    </form>
+                </div>
+            </p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

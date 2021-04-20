@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="col">
+        <form action="" method="post" novalidate>
+            {{ search_category_form.hidden_tag() }}
+            <p>
+                {{ search_category_form.search_category() }}
+                {{ search_category_form.submit(type="submit", class="btn btn-success") }}
+            </p>
+        </form>
+
+        <form action="" method="post" novalidate>
+            {{ add_category_form.hidden_tag() }}
+            <p>
+                {{ add_category_form.title() }}
+                {{ add_category_form.submit(type="submit", class="btn btn-primary") }}
+            </p>
+        </form>
+
+        {% for category, category_form in categories.values() %}
+            <div class="joke">
+                <form action="" method="post" novalidate>
+                    {{ category_form.hidden_tag() }}
+                    <p>
+                        {{ category.title }}
+                        {{ category_form.id(type="hidden") }}
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm">Удалить</button>
+                    </p>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                {{ category_form.submit(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
