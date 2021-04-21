@@ -3,8 +3,10 @@ from flask import jsonify, make_response, request
 import datetime
 import random
 
-from . import db_session
-from .anecdotes import Anecdote
+from data import db_session
+from data.anecdotes import Anecdote
+from .auth import auth
+
 
 DELTAS = {
     "day": datetime.timedelta(days=1),
@@ -27,12 +29,6 @@ class AnecdotesResource(Resource):
         return make_response(jsonify({"anecdote": anecdote.to_dict(only=(
             "text", "rating", "name", "category", "created_date", "user.name"
         ))}), 200)
-# {"anecdote_text": anecdote.text,
-#  "rating": anecdote.rating,
-#  "anecdote_name": anecdote.name,
-#  "category": anecdote.category.title,
-#  "date": str(anecdote.created_date),
-#  "creator_name": anecdote.creator.name}
 
 
 class AnecdotesListResource(Resource):
