@@ -9,4 +9,4 @@ class Category(SqlAlchemyBase):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-    anecdotes = orm.relation('Anecdote', cascade='all,delete', back_populates='category')
+    anecdotes = orm.relation('Anecdote', cascade="all, delete-orphan", back_populates='category')

@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data.db_session import *
 from data.users import User
@@ -11,6 +11,8 @@ from forms.search_user_form import SearchUserForm
 from forms.search_category_form import SearchCategoryForm
 from forms.admin_user_edit_form import AdminUserEditForm
 from forms.user_data_form import UserDataForm
+from forms.like_form import LikeForm
+from forms.dislike_form import DislikeForm
 from data import anecdotes_resource
 from flask_restful import Api
 from data.anecdotes import Anecdote
@@ -43,6 +45,21 @@ def search_categories(db_sess, line=''):
         form.id.data = category.id
         categories[i] = (category.id, (category, form))
     return dict(categories)
+
+
+def search_anecdotes(db_sess, user_id):
+    anecdotes = db_sess.query(Anecdote).filter(User.id == user_id).all()
+    categories = db_sess.query(Category).all()
+    for i, anecdote in enumerate(anecdotes):
+        like_form = LikeForm()
+        dislike_form = DislikeForm()
+        edit_form = AddAnecdoteForm()
+        edit_form.category.choices = [(category.id, category.title) for category in categories]
+        edit_form.category.data = (anecdote.category.id, anecdote.category.title)
+        edit_form.name.data = anecdote.name
+        edit_form.text.data = anecdote.text
+        anecdotes[i] = (anecdote.id, (anecdote, like_form, dislike_form, edit_form))
+    return dict(anecdotes)
 
 
 @login_manager.user_loader
@@ -139,6 +156,8 @@ def add_anecdote():
 @app.route('/admin/edit_users', methods=['GET', 'POST'])
 @login_required
 def admin_edit_users():
+    if not current_user.is_admin:
+        abort(401)
     search_user_form = SearchUserForm()
     db_sess = create_session()
     users = search_users(db_sess)
@@ -163,6 +182,8 @@ def admin_edit_users():
 @app.route('/admin/edit_categories', methods=['GET', 'POST'])
 @login_required
 def admin_edit_categories():
+    if not current_user.is_admin:
+        abort(401)
     search_category_form = SearchCategoryForm()
     delete_category_form = DeleteCategoryForm()
     add_category_form = AddCategoryForm()
@@ -194,11 +215,13 @@ def admin_edit_categories():
     return render_template('admin_edit_categories.html', **context)
 
 
-@app.route('/user_profile')
+@app.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
+    db_sess = create_session()
+    anecdotes = search_anecdotes(db_sess, current_user.id)
     user_data_form = UserDataForm()
-    return render_template('user_profile.html', user_data=user_data_form)
+    return render_template('user_profile.html', user_data=user_data_form, anecdotes=anecdotes)
 
 
 api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")

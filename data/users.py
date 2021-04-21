@@ -16,7 +16,7 @@ class User(SqlAlchemyBase, UserMixin):
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_banned = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
-    anecdotes = orm.relation('Anecdote', cascade='all,delete', back_populates='user')
+    anecdotes = orm.relation('Anecdote', cascade="all, delete-orphan", back_populates='user')
     comments = orm.relation('Comment', back_populates='user')
     likes = orm.relation('Like', back_populates='user')
 
