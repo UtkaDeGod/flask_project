@@ -8,40 +8,82 @@
             <button type="submit" class="btn btn-success">Поиск</button>
         </form>
 
-        <div class="joke">
-            <form method="post" id="form" action="">
+        <div class="card">
+            <div class="card-header">
                 <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
                 <label for="ava" style="font-size:150%">{{ UserName }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post" id="form" action="">
 
-                <input type="hidden" name="user_id" value="{{ user_id }}">
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
 
-                {% if flag_test %}
-                <input type="checkbox" id="is_admin" checked name="admin" value="on">
-                {% else %}
-                <input type="checkbox" id="is_admin" name="admin" value="on">
-                {% endif %}
-                <label for="is_admin">админ</label>
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_admin" checked name="admin" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_admin" name="admin" value="on">
+                    {% endif %}
+                    <label for="is_admin">админ</label>
 
-                {% if flag_test %}
-                <input type="checkbox" id="is_ban" checked name="ban" value="on">
-                {% else %}
-                <input type="checkbox" id="is_ban" name="ban" value="on">
-                {% endif %}
-                <label for="is_admin">блокировка</label>
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_ban" checked name="ban" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_ban" name="ban" value="on">
+                    {% endif %}
+                    <label for="is_admin">блокировка</label>
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
-                    Подтвердить
-                </button>
-                <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="submit" class="btn btn-primary">подтвердить</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                        Подтвердить
+                    </button>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <button type="submit" class="btn btn-primary">подтвердить</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ UserName }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post" id="form" action="">
 
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_admin" checked name="admin" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_admin" name="admin" value="on">
+                    {% endif %}
+                    <label for="is_admin">админ</label>
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_ban" checked name="ban" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_ban" name="ban" value="on">
+                    {% endif %}
+                    <label for="is_admin">блокировка</label>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                        Подтвердить
+                    </button>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <button type="submit" class="btn btn-primary">подтвердить</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <div class="col">
@@ -64,7 +106,7 @@
                 </div>
             </div>
         </form>
-        <div class="joke">
+        <div class="card">
             <form action="" method="post" novalidate>
                 {{ category_name }}
                 <input type="hidden" name="del_category">
@@ -82,7 +124,7 @@
             </form>
         </div>
     </div>
-    <div class="joke">
+    <!--<div class="joke">
         <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
         <label for="ava" style="font-size:150%">Лёха</label>
 
@@ -159,6 +201,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
 {% endblock %}
