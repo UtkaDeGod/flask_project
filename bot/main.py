@@ -1,16 +1,9 @@
 import requests
-from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram import ReplyKeyboardMarkup
-import datetime
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
 
 
-def time(update, context):
-    update.message.reply_text(str(datetime.datetime.now().time()))
-
-
-def date(update, context):
-    update.message.reply_text(str(datetime.datetime.now().date()))
+PERIODS = ["all_time", "year", "month", "week", "day"]
 
 
 def anecdote(update, context):
@@ -18,6 +11,7 @@ def anecdote(update, context):
     response = requests.get("http://127.0.0.2:5000/anecdote")
     if response.status_code != 200:
         update.message.reply_text("Анекдота не будет, БД приняла ислам(ничего не найдено)")
+        return
     anec = response.json()["anecdote"]
     update.message.reply_text(f"Название: {anec['name']}    Жанр: {anec['category']}\n"
                               f"Автор: {anec['user.name']}\n"
@@ -27,60 +21,37 @@ def anecdote(update, context):
 
 
 def top(update, context):
+    keyboard = [
+        [
+            InlineKeyboardButton("all_time", callback_data='0'),
+            InlineKeyboardButton("year", callback_data='1'),
+        ],
+        [InlineKeyboardButton("month", callback_data='2'),
+         InlineKeyboardButton("week", callback_data='3'),
+         InlineKeyboardButton("day", callback_data='4')],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
     update.message.reply_text(
-        "За какой промежуток времени ты хочешь получить топ анекдотов?",
-        reply_markup=markup
+        "За какой промежуток времени вы хотите получить топ анекдотов?",
+        reply_markup=reply_markup
     )
 
 
-def day(update, context):
-    response = requests.get("http://127.0.0.2:5000/anecdotes/top", json={"period": "day"})
+def top_request(update, context):
+    query = update.callback_query
+    query.answer()
+    if not query.data:
+        response = requests.get("http://127.0.0.2:5000/anecdotes/top")
+    else:
+        response = requests.get("http://127.0.0.2:5000/anecdotes/top",
+                                json={"period": PERIODS[int(query.data)]})
     if response.status_code != 200:
-        update.message.reply_text("Топа не будет, БД приняла ислам")
-
+        query.edit_message_text(text="Топа не будет, БД приняла ислам")
+        return
     anecdotes = response.json()["anecdotes"]
     res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
-    update.message.reply_text(res)
-
-
-def week(update, context):
-    response = requests.get("http://127.0.0.2:5000/anecdotes/top", json={"period": "week"})
-    if response.status_code != 200:
-        update.message.reply_text("Топа не будет, БД приняла ислам")
-
-    anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
-    update.message.reply_text(res)
-
-
-def month(update, context):
-    response = requests.get("http://127.0.0.2:5000/anecdotes/top", json={"period": "month"})
-    if response.status_code != 200:
-        update.message.reply_text("Топа не будет, БД приняла ислам")
-
-    anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
-    update.message.reply_text(res)
-
-
-def year(update, context):
-    response = requests.get("http://127.0.0.2:5000/anecdotes/top", json={"period": "year"})
-    if response.status_code != 200:
-        update.message.reply_text("Топа не будет, БД приняла ислам")
-
-    anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
-    update.message.reply_text(res)
-
-
-def all_time(update, context):
-    response = requests.get("http://127.0.0.2:5000/anecdotes/top")
-    if response.status_code != 200:
-        update.message.reply_text("Топа не будет, БД приняла ислам")
-
-    anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
-    update.message.reply_text(res)
+    query.edit_message_text(text=f"{res}")
 
 
 def help(update, context):
@@ -97,17 +68,10 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("anecdote", anecdote))
     dp.add_handler(CommandHandler("top", top))
-    dp.add_handler(CommandHandler("day", day))
-    dp.add_handler(CommandHandler("week", week))
-    dp.add_handler(CommandHandler("month", month))
-    dp.add_handler(CommandHandler("year", year))
-    dp.add_handler(CommandHandler("all_time", all_time))
+    updater.dispatcher.add_handler(CallbackQueryHandler(top_request))
     updater.start_polling()
     updater.idle()
 
 
 if __name__ == '__main__':
-    reply_keyboard = [['/all_time', '/year'],
-                      ['/month', '/week', '/day']]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     main()
