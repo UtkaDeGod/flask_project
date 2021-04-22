@@ -6,17 +6,18 @@ from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from forms.add_anecdote_form import AddAnecdoteForm
 from forms.add_category_form import AddCategoryForm
+from forms.edit_anecdote_form import EditAnecdoteForm
 from forms.delete_category_form import DeleteCategoryForm
 from forms.search_user_form import SearchUserForm
 from forms.search_category_form import SearchCategoryForm
 from forms.admin_user_edit_form import AdminUserEditForm
 from forms.user_data_form import UserDataForm
 from forms.like_form import LikeForm
-from forms.dislike_form import DislikeForm
 from data import anecdotes_resource
 from flask_restful import Api
 from data.anecdotes import Anecdote
 from data.categories import Category
+from data.likes import Like
 from datetime import datetime
 from math import ceil
 
@@ -51,15 +52,42 @@ def search_anecdotes(db_sess, user_id):
     anecdotes = db_sess.query(Anecdote).filter(User.id == user_id).all()
     categories = db_sess.query(Category).all()
     for i, anecdote in enumerate(anecdotes):
-        like_form = LikeForm()
-        dislike_form = DislikeForm()
-        edit_form = AddAnecdoteForm()
-        edit_form.category.choices = [(category.id, category.title) for category in categories]
-        edit_form.category.data = (anecdote.category.id, anecdote.category.title)
-        edit_form.name.data = anecdote.name
-        edit_form.text.data = anecdote.text
+        like_form = LikeForm(prefix=f'like_form{anecdote.id}')
+        dislike_form = LikeForm(prefix=f'dislike_form{anecdote.id}')
+
+        edit_form = EditAnecdoteForm(prefix=f'edit_form{anecdote.id}')
+        edit_form.category_id.choices = [(category.id, category.title) for category in categories]
+
+        dislike_form.anecdote_id.data = like_form.anecdote_id.data = edit_form.anecdote_id.data = anecdote.id
+        like_form.value.data = 1
+        dislike_form.value.data = -1
+
         anecdotes[i] = (anecdote.id, (anecdote, like_form, dislike_form, edit_form))
     return dict(anecdotes)
+
+
+def create_list_anecdotes_for_index(anecdotes):
+    for i, anecdote in enumerate(anecdotes):
+        like_form = LikeForm(prefix=f'like_form{anecdote.id}')
+        dislike_form = LikeForm(prefix=f'dislike_form{anecdote.id}')
+        dislike_form.anecdote_id.data = like_form.anecdote_id.data = anecdote.id
+        like_form.value.data = 1
+        dislike_form.value.data = -1
+        anecdotes[i] = (anecdote.id, (anecdote, like_form, dislike_form))
+    return dict(anecdotes)
+
+
+def create_buttons_of_pagination(page, pages_count):
+    if pages_count >= 7:
+        pagination = [str(page)]
+        if page != 1:
+            pagination = (['1', '...'] if page != 2 else []) + [str(page - 1)] + pagination
+        if page != pages_count:
+            pagination = pagination + ([str(page + 1), '...'] if page != pages_count - 1 else []) + [str(pages_count)]
+        pagination = ['Previous'] + pagination + ['Next']
+    else:
+        pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
+    return pagination
 
 
 @login_manager.user_loader
@@ -124,17 +152,26 @@ def index_with_pagination(page):
     db_sess = create_session()
     ON_PAGE_COUNT = 20
     pages_count = ceil(len(db_sess.query(Anecdote).all()) / ON_PAGE_COUNT)
-    if pages_count >= 7:
-        pagination = [str(page)]
-        if page != 1:
-            pagination = (['1', '...'] if page != 2 else []) + [str(page - 1)] + pagination
-        if page != pages_count:
-            pagination = pagination + ([str(page + 1), '...'] if page != pages_count - 1 else []) + [str(pages_count)]
-        pagination = ['Previous'] + pagination + ['Next']
-    else:
-        pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
+    pagination = create_buttons_of_pagination(page, pages_count)
     anecdotes = db_sess.query(Anecdote).order_by(Anecdote.created_date.desc()). \
         offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
+    anecdotes = create_list_anecdotes_for_index(anecdotes)
+
+    if request.method == 'POST':
+        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
+        anecdote = anecdotes[anecdote_id]
+
+        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
+            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
+            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
+            if like is None:
+                like = Like(user_id=current_user.id, anecdote_id=anecdote_id)
+            elif like is not None and like.value != int(value):
+                anecdote[0].rating += int(value)
+            like.value = value
+            db_sess.add(like)
+            db_sess.commit()
+
     return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count)
 
 
@@ -221,6 +258,27 @@ def user_profile():
     db_sess = create_session()
     anecdotes = search_anecdotes(db_sess, current_user.id)
     user_data_form = UserDataForm()
+    if not user_data_form.validate_on_submit() and request.method == 'POST':
+        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
+        anecdote = anecdotes[anecdote_id]
+
+        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
+            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
+            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
+            if like is None:
+                like = Like(user_id=current_user.id, anecdote_id=anecdote_id)
+            elif like is not None and like.value != int(value):
+                anecdote[0].rating += int(value)
+            like.value = value
+            db_sess.add(like)
+            db_sess.commit()
+        if anecdote[3].validate_on_submit():
+            for key in ['name', 'text', 'category_id']:
+                setattr(anecdote[0], key, getattr(anecdote[3], key).data)
+            db_sess.commit()
+    else:
+        pass
+
     return render_template('user_profile.html', user_data=user_data_form, anecdotes=anecdotes)
 
 

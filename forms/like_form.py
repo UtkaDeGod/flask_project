@@ -5,6 +5,7 @@ from wtforms import SubmitField, HiddenField
 
 
 class LikeForm(FlaskForm):
-    value = HiddenField(default=1)
+    anecdote_id = HiddenField()
+    value = HiddenField()
 
-    submit = SubmitField(Markup(f'<img src="static/img/like.png" width="20" height="20">'))
+    submit = SubmitField()

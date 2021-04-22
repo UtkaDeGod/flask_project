@@ -16,45 +16,54 @@
 
                     </li>
                     <br>
-                    <form method="post" id="form" action="">
+                    <form method="post">
                         {{ like_form.hidden_tag() }}
+                        {{ like_form.anecdote_id(type='hidden') }}
                         {{ like_form.value(type='hidden') }}
-                        {{ dislike_form.submit(type="submit") }}
+                        <button type="submit" name="submit">
+                                <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
+                            </button>
                         <div class="field"></div>
                     </form>
 
-                    <form method="post" id="form" action="">
+                    <form method="post">
                         {{ dislike_form.hidden_tag() }}
+                        {{ dislike_form.anecdote_id(type='hidden') }}
                         {{ dislike_form.value(type='hidden') }}
-                        {{ dislike_form.submit(type="submit") }}
+                        <button type="submit" name="submit">
+                                <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
+                            </button>
                         <div class="field"></div>
                     </form>
+                    {{ anecdote.rating }}
 
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
+                            data-bs-target="#exampleModal{{ anecdote.id }}"
                             style="height:50px;width:120px">
                         Редактровать
                     </button>
-                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    <div class="modal fade" id="exampleModal{{ anecdote.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                          aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form action="" method="post" novalidate>
+                                <form method="post">
                                     {{ edit_form.hidden_tag() }}
+                                    {{ edit_form.anecdote_id(type='hidden') }}
                                     <div class="modal-header">
                                         {{ edit_form.name.label }}<br>
-                                        {{ edit_form.name(class="form-control", value=name) }}<br>
+                                        {{ edit_form.name(class="form-control", value=anecdote.name) }}<br>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
 
                                     <div class="modal-body">
                                         {{ edit_form.text.label }}<br>
-                                        {{ edit_form.text(class="form-control", style="height:300px;width:470px") }}<br>
+                                        <textarea class="form-control" name="edit_form{{ anecdote.id }}-text" style="height:300px;width:470px">{{ anecdote.text }}</textarea><br>
+                                        {{ edit_form.category_id.label }}<br>
+                                        {{ edit_form.category_id(class="form-control", value=anecdote.category.id) }}
                                     </div>
 
                                     <div class="modal-footer">
-                                        {{ edit_form.category() }}
                                         {{ edit_form.submit(type="submit", class="btn btn-primary") }}
                                     </div>
                                 </form>
