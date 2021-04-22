@@ -11,22 +11,31 @@
             </p>
         </form>
         {% for user, user_form in users.values() %}
-            <p>
-                <div class="joke" id="{{ user.id }}">
-                    <form method="post" id="form" action="">
-                        {{ user_form.hidden_tag() }}
-                        <p>
-                            <img src="{{ url_for('static', filename=user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                            <label for="ava" style="font-size:150%">{{ user.name }}</label>
-
+            <div class="card">
+                <form method="post" id="form" action="">
+                    {{ user_form.hidden_tag() }}
+                    <div class="card-header">
+                        <img src="{{ url_for('static', filename=user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                        <label for="ava" style="font-size:150%">{{ user.name }}</label>
+                    </div>
+                    <div class="card-body">
                             {{ user_form.id(type="hidden") }}
-                            {{ user_form.is_admin(type="checkbox") }} админ
-                            {{ user_form.is_banned(type="checkbox") }} забанен
+                            {% if user.is_admin %}
+                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox" checked > админ
+                            {% else %}
+                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox"> админ
+                            {% endif %}
+
+                            {% if user.is_banned %}
+                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox" checked> забанен
+                            {% else %}
+                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox"> забанен
+                            {% endif %}
                             {{ user_form.submit(type="submit", class="btn btn-primary") }}
-                        </p>
-                    </form>
-                </div>
-            </p>
+                    </div>
+                </form>
+            </div>
+        <br>
         {% endfor %}
     </div>
 </div>

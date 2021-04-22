@@ -3,112 +3,55 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-sm">
-            <ul>
-                {% for anecdote, like_form, dislike_form, edit_form in anecdotes.values() %}
-                    <!-- блок анекдота -->
-                    <li>
-                        <div class="joke">
-                            <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                            <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
-                            <p>{{ anecdote.text }}</p>
-                        </div>
-
-                    </li>
+        <div class="col">
+        </div>
+        <div class="col">
+            <br>
+            <br>
+            <div class="card">
+                <div class="card-body">
+                <form action="" method="post" enctype="multipart/form-data">
+                    <div>
+                        {{ form.csrf_token }}
+                    </div>
+                    <input type="hidden" value="{{ userid }}" name="userid">
+                    <div class="form-group">
+                        {{ form.name.label() }}
+                        {{ form.name(value=current_user.name, class="form-control") }}
+                    </div>
                     <br>
-                    <form method="post">
-                        {{ like_form.hidden_tag() }}
-                        {{ like_form.anecdote_id(type='hidden') }}
-                        {{ like_form.value(type='hidden') }}
-                        <button type="submit" name="submit">
-                                <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
-                            </button>
-                        <div class="field"></div>
-                    </form>
+                    <div class="form-group">
+                        {{ form.email.label() }}
+                        {{ form.email(value=current_user.email, class="form-control") }}
+                    </div>
+                    <br>
+                    <div class="form-group">
 
-                    <form method="post">
-                        {{ dislike_form.hidden_tag() }}
-                        {{ dislike_form.anecdote_id(type='hidden') }}
-                        {{ dislike_form.value(type='hidden') }}
-                        <button type="submit" name="submit">
-                                <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
-                            </button>
-                        <div class="field"></div>
-                    </form>
-                    {{ anecdote.rating }}
-
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal{{ anecdote.id }}"
-                            style="height:50px;width:120px">
-                        Редактровать
+                        {{ form.old_password.label() }}
+                        {{ form.old_password(class="form-control") }}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        {{ form.user_picture.label(class="form-label") }}
+                        {{ form.user_picture(class="form-control") }}
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                                                Редактровать
                     </button>
-                    <div class="modal fade" id="exampleModal{{ anecdote.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
                          aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form method="post">
-                                    {{ edit_form.hidden_tag() }}
-                                    {{ edit_form.anecdote_id(type='hidden') }}
-                                    <div class="modal-header">
-                                        {{ edit_form.name.label }}<br>
-                                        {{ edit_form.name(class="form-control", value=anecdote.name) }}<br>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-
-                                    <div class="modal-body">
-                                        {{ edit_form.text.label }}<br>
-                                        <textarea class="form-control" name="edit_form{{ anecdote.id }}-text" style="height:300px;width:470px">{{ anecdote.text }}</textarea><br>
-                                        {{ edit_form.category_id.label }}<br>
-                                        {{ edit_form.category_id(class="form-control", value=anecdote.category.id) }}
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        {{ edit_form.submit(type="submit", class="btn btn-primary") }}
-                                    </div>
-                                </form>
+                                {{ form.submit(class="btn btn-primary") }}
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-                </li>
-                <br>
-            </ul>
-        </div>
-        <div class="col-sm joke">
-            <form action="" method="post" enctype="multipart/form-data">
-                <input type="hidden" value="{{ userid }}" name="userid">
-
-                {{ user_data.name(id="user_name", value=UserName) }}
-                <label for="user_name">Имя</label>
-                <br>
-
-                {{ user_data.email(id="email", value=email) }}
-                <label for="email">email</label>
-                <br>
-
-                {{ user_data.password(id="password") }}
-                <label for="password">пароль</label>
-                <br>
-
-                {{ user_data.avatar(id="avatar", class="btn btn-primary") }}
-                <label for="avatar">аватарка</label>
-                <br>
-                <br>
-
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm"
-                        style="height:50px;width:200px">
-                    изменить
-                </button>
-                <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="submit" class="btn btn-primary">подтвердить</button>
-                        </div>
-                    </div>
+                </form>
                 </div>
-            </form>
+            </div>
+        </div>
+        <div class="col">
         </div>
     </div>
 </div>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <ul>
+            <!-- блок анекдота -->
+            {% for anecdote, accept_form, reject_form in anecdotes.values() %}
+                <div class="card">
+                    <div class="card-header">
+                        <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+                    </div>
+                    <div class="card-body">
+                        <h3>{{ anecdote.name }}</h3>
+                        <p>{{ anecdote.text }}</p>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ accept_form.hidden_tag() }}
+                                        {{ accept_form.value(type='hidden') }}
+                                        {{ accept_form.anecdote_id(type='hidden') }}
+                                        {{ accept_form.submit(type='submit', class='btn btn-success') }}
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ reject_form.hidden_tag() }}
+                                        {{ reject_form.value(type='hidden') }}
+                                        {{ reject_form.anecdote_id(type='hidden') }}
+                                        {{ reject_form.submit(type='submit', class='btn btn-danger') }}
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+                                <div class="col-xl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col col-lg-2"></div>
+</div>
+{% endblock %}

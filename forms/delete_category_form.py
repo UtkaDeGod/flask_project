@@ -4,5 +4,4 @@ from wtforms import SubmitField, HiddenField
 
 class DeleteCategoryForm(FlaskForm):
     id = HiddenField()
-    action = HiddenField(default='delete_category')
     submit = SubmitField('Удалить')
