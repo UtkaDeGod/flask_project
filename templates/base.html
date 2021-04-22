@@ -31,8 +31,9 @@
                 <input class="form-control me-2" type="search" placeholder="Поиск анекдота" aria-label="Search">
                 <button class="btn btn-warning" type="submit">Искать</button>
             </form>
+            <p style="color:#0D6EFD">000</p>
             {% if current_user.is_authenticated %}
-                <li class="nav-item dropdown">
+                <ui class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ url_for('static', filename=current_user.picture_path) }}" alt="" width="50" height="30" style="border-radius: 50%"
@@ -47,12 +48,12 @@
                         </li>
                         <li><a class="dropdown-item" href="/logout">Выйти</a></li>
                     </ul>
-                </li>
+                </ui>
             {% else %}
-                <li class="nav-item dropdown">
+                <ui class="nav-item dropdown">
                     <a class="btn btn-warning" href="/login">Войти</a>
                     <a class="btn btn-warning" href="/register">Зарегистрировться</a>
-                </li>
+                </ui>
             {% endif %}
         </div>
     </div>

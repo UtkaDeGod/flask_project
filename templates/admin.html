@@ -1,0 +1,206 @@
+{% extends "main_shablon.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <form action="" method="post" novalidate>
+            {{ search_form.search_user() }}
+            <button type="submit" class="btn btn-success">Поиск</button>
+        </form>
+
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ UserName }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post" id="form" action="">
+
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_admin" checked name="admin" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_admin" name="admin" value="on">
+                    {% endif %}
+                    <label for="is_admin">админ</label>
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_ban" checked name="ban" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_ban" name="ban" value="on">
+                    {% endif %}
+                    <label for="is_admin">блокировка</label>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                        Подтвердить
+                    </button>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <button type="submit" class="btn btn-primary">подтвердить</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ UserName }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post" id="form" action="">
+
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_admin" checked name="admin" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_admin" name="admin" value="on">
+                    {% endif %}
+                    <label for="is_admin">админ</label>
+
+                    {% if flag_test %}
+                    <input type="checkbox" id="is_ban" checked name="ban" value="on">
+                    {% else %}
+                    <input type="checkbox" id="is_ban" name="ban" value="on">
+                    {% endif %}
+                    <label for="is_admin">блокировка</label>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                        Подтвердить
+                    </button>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <button type="submit" class="btn btn-primary">подтвердить</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <form action="" method="post" novalidate>
+            {{ search_form.search_category() }}
+            <button type="submit" class="btn btn-success">Поиск</button>
+        </form>
+
+        <form action="" method="post" novalidate>
+            {{ form.add_category() }}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                Добавить +
+            </button>
+            <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <button type="submit" class="btn btn-primary">Подтвердить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="card">
+            <form action="" method="post" novalidate>
+                {{ category_name }}
+                <input type="hidden" name="del_category">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm">
+                    Удалить
+                </button>
+                <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="submit" class="btn btn-primary">у</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--<div class="joke">
+        <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+        <label for="ava" style="font-size:150%">Лёха</label>
+
+        <p>После того как омоновцев стали называть космонавтами словосочетание космический мусор для
+            меня заиграло новыми красками.</p>
+
+        <form method="post" id="form" action="">
+            <input type="hidden" name="appraisal" value="1">
+            <button type="submit" class="btn btn-info">
+                принять
+            </button>
+            <div class="field"></div>
+        </form>
+
+        <form method="post" id="form" action="">
+            <input type="hidden" name="appraisal" value="0">
+            <button type="submit" class="btn btn-danger">
+                отказать
+            </button>
+            <div class="field"></div>
+        </form>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                style="height:50px;width:120px">
+            редактровать
+        </button>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="" method="post" novalidate>
+
+                        {{ form.hidden_tag() }}
+
+                        <div class="modal-header">
+                            {{ form.name.label }}<br>
+                            {{ form.name(class="form-control", value=name) }}<br>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            {{ form.text.label }}<br>
+                            {{ form.text(class="form-control", style="height:300px;width:470px") }}<br>
+                        </div>
+
+                        <div class="modal-footer">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-danger dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Категории
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for name_category in category %}
+                                    <li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   name="flexRadioDefault"
+                                                   id="{{ name_category }}">
+                                            <label class="form-check-label" for="{{ name_category }}">
+                                                {{ name_category }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {{ form.submit(type="submit", class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>-->
+</div>
+{% endblock %}
