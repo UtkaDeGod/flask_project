@@ -1,10 +1,11 @@
 from flask import Flask, redirect, render_template
 from flask_login import LoginManager, login_user
-from data import *
 from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
-from data import anecdotes_resource, db_session
+from data import db_session
+from api import anecdotes_resource
+from api import users_resource
 from flask_restful import Api
 
 
@@ -55,9 +56,11 @@ def register():
     return render_template('register.html', **context)
 
   
-api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
-api.add_resource(anecdotes_resource.AnecdotesListResource, "/anecdotes/page")
-api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")
+api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
+api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes/page")
+api.add_resource(users_resource.UsersListResource, "/api/users")
+api.add_resource(users_resource.UsersResource, "/api/users/<int:user_id>")
+api.add_resource(users_resource.UsersRegistrationResource, "/api/users/personal_register")
 
 if __name__ == '__main__':
     db_session.global_init('db/anecdotes.db')

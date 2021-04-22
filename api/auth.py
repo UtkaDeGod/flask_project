@@ -10,7 +10,5 @@ auth = HTTPBasicAuth()
 def verify_password(email, password):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.email == email).first()
-    if not user or not user.check_password(password):
-        return False
-    g.user = user
-    return True
+    if user and user.check_password(password):
+        return user
