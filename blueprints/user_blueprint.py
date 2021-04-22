@@ -1,11 +1,11 @@
 from flask import redirect, render_template, request, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 from data.db_session import *
-from data.users import User
+from models.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from forms.edit_user_form import EditUserForm
-from data.likes import Like
+from models.likes import Like
 from PIL import Image
 from data.system_functions import search_anecdotes
 

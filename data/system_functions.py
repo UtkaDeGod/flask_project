@@ -1,12 +1,12 @@
-from data.users import User
+from models.users import User
 from forms.edit_anecdote_form import EditAnecdoteForm
 from forms.delete_category_form import DeleteCategoryForm
 from forms.admin_user_edit_form import AdminUserEditForm
 from forms.like_form import LikeForm
 from forms.accept_form import AcceptForm
 from forms.reject_form import RejectForm
-from data.anecdotes import Anecdote
-from data.categories import Category
+from models.anecdotes import Anecdote
+from models.categories import Category
 
 
 def search_users(db_sess, line=''):

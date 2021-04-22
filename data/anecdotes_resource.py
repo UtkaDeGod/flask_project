@@ -4,7 +4,7 @@ import datetime
 import random
 
 from . import db_session
-from .anecdotes import Anecdote
+from models.anecdotes import Anecdote
 
 DELTAS = {
     "day": datetime.timedelta(days=1),

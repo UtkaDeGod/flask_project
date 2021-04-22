@@ -2,9 +2,9 @@ from flask import redirect, render_template, request, Blueprint
 from flask_login import login_required, current_user
 from data.db_session import *
 from forms.add_anecdote_form import AddAnecdoteForm
-from data.anecdotes import Anecdote
-from data.categories import Category
-from data.likes import Like
+from models.anecdotes import Anecdote
+from models.categories import Category
+from models.likes import Like
 from datetime import datetime
 from math import ceil
 from data.system_functions import create_buttons_of_pagination, create_list_anecdotes_for_index

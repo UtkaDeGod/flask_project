@@ -4,8 +4,8 @@ from data.db_session import *
 from forms.add_category_form import AddCategoryForm
 from forms.search_user_form import SearchUserForm
 from forms.search_category_form import SearchCategoryForm
-from data.anecdotes import Anecdote
-from data.categories import Category
+from models.anecdotes import Anecdote
+from models.categories import Category
 from data.system_functions import search_categories, search_users, create_list_anecdotes_for_moderation
 
 
