@@ -4,8 +4,8 @@ import datetime
 import random
 
 from data import db_session
-from data.anecdotes import Anecdote
-from data.categories import Category
+from models.anecdotes import Anecdote
+from models.categories import Category
 from .auth import auth
 
 DELTAS = {

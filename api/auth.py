@@ -1,5 +1,5 @@
 from flask_httpauth import HTTPBasicAuth
-from data.users import User
+from models.users import User
 from data import db_session
 
 
