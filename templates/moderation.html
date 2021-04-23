@@ -8,9 +8,9 @@
             {% for anecdote, accept_form, reject_form in anecdotes.values() %}
                 <div class="card">
                     <div class="card-header">
-                        <big style="float: right;">{{ anecdote.rating }}</big>
                         <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
                         <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+                        <big style="float: right;">Рейтинг {{ anecdote.rating }}</big>
                     </div>
                     <div class="card-body">
                         <h3>{{ anecdote.name }}</h3>
