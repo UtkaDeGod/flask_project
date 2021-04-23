@@ -3,7 +3,6 @@ from flask_login import LoginManager
 from data.db_session import *
 from models.users import User
 from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint
-
 from data import anecdotes_resource
 from flask_restful import Api
 

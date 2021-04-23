@@ -5,6 +5,7 @@ test.py
 templates/moder.html
 templates/main_page.html
 templates/user_page.html
+templates/test.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

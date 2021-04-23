@@ -1,3 +1,5 @@
+from math import ceil
+
 from models.users import User
 from forms.edit_anecdote_form import EditAnecdoteForm
 from forms.delete_category_form import DeleteCategoryForm
@@ -9,8 +11,7 @@ from models.anecdotes import Anecdote
 from models.categories import Category
 
 
-def search_users(db_sess, line=''):
-    users = db_sess.query(User).filter(User.name.like(f'%{line}%')).all()
+def search_users(users):
     for i, user in enumerate(users):
         form = AdminUserEditForm(prefix=f'user_edit_form{user.id}')
         form.id.data = user.id
@@ -18,8 +19,7 @@ def search_users(db_sess, line=''):
     return dict(users)
 
 
-def search_categories(db_sess, line=''):
-    categories = db_sess.query(Category).filter(Category.title.like(f'%{line}%')).all()
+def search_categories(categories):
     for i, category in enumerate(categories):
         form = DeleteCategoryForm(prefix=f'delete_category_form{category.id}')
         form.id.data = category.id
@@ -27,8 +27,7 @@ def search_categories(db_sess, line=''):
     return dict(categories)
 
 
-def search_anecdotes(db_sess, user_id):
-    anecdotes = db_sess.query(Anecdote).filter(User.id == user_id).all()
+def search_anecdotes(db_sess, anecdotes):
     categories = db_sess.query(Category).all()
     for i, anecdote in enumerate(anecdotes):
         like_form = LikeForm(prefix=f'like_form{anecdote.id}')
@@ -56,8 +55,7 @@ def create_list_anecdotes_for_index(anecdotes):
     return dict(anecdotes)
 
 
-def create_list_anecdotes_for_moderation(db_sess):
-    anecdotes = db_sess.query(Anecdote).filter(Anecdote.is_published == 0).all()
+def create_list_anecdotes_for_moderation(anecdotes):
     for i, anecdote in enumerate(anecdotes):
         accept_form = AcceptForm(prefix=f'accept_form{anecdote.id}')
         reject_form = RejectForm(prefix=f'reject_form{anecdote.id}')
@@ -67,7 +65,10 @@ def create_list_anecdotes_for_moderation(db_sess):
     return dict(anecdotes)
 
 
-def create_buttons_of_pagination(page, pages_count):
+def create_buttons_of_pagination(page, array):
+    ON_PAGE_COUNT = 20
+    pages_count = ceil(len(array.all()) / ON_PAGE_COUNT)
+    array = array.offset((page - 1) * ON_PAGE_COUNT).limit(ON_PAGE_COUNT).all()
     if pages_count >= 7:
         pagination = [str(page)]
         if page != 1:
@@ -77,4 +78,4 @@ def create_buttons_of_pagination(page, pages_count):
         pagination = ['Previous'] + pagination + ['Next']
     else:
         pagination = ['Previous'] + list(map(str, range(1, pages_count + 1))) + ['Next']
-    return pagination
+    return pages_count, array, pagination

@@ -1,45 +1,61 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        <ul class="list-group">
-            <li class="list-group-item active">
-                <form name="search_form" id="search_form" method="get" class="d-flex">
-                    <input type="search" class="form-control me-2" name="search_line" id="search_line" value="{{ search_line }}">
-                    <input type="submit" class="btn btn-success" name="search_submit" id="search_submit" value="Искать">
-                </form>
-            </li>
-        </ul>
-        <br>
-        {% for user, user_form in users.values() %}
-            <div class="card" id="{{ user.id }}">
-                <form method="post" id="form" action="">
-                    {{ user_form.hidden_tag() }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    <form name="search_form" id="search_form" method="get" class="d-flex">
+                        <input type="search" class="form-control me-2" name="search_line" id="search_line" value="{{ search_line }}">
+                        <input type="submit" class="btn btn-success" name="search_submit" id="search_submit" value="Искать">
+                    </form>
+                </li>
+            </ul>
+            {% for anecdote, like_form, dislike_form, edit_form in anecdotes.values() %}
+                <br>
+                <!-- блок анекдота -->
+                <div class="card" id="{{ anecdote.id }}">
                     <div class="card-header">
-                        <img src="{{ url_for('static', filename=user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
-                        <label for="ava" style="font-size:150%">{{ user.name }}</label>
+                        <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+                        <big style="float: right;">Рейтинг: {{ anecdote.rating }}</big>
                     </div>
                     <div class="card-body">
-                            {{ user_form.id(type="hidden") }}
-                            {% if user.is_admin %}
-                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox" checked > админ
-                            {% else %}
-                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox"> админ
-                            {% endif %}
-
-                            {% if user.is_banned %}
-                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox" checked> забанен
-                            {% else %}
-                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox"> забанен
-                            {% endif %}
-                            {{ user_form.submit(type="submit", class="btn btn-primary") }}
+                        <h3>{{ anecdote.name }}</h3>
+                        <p>{{ anecdote.text|safe }}</p>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ like_form.hidden_tag() }}
+                                        {{ like_form.anecdote_id(type='hidden') }}
+                                        {{ like_form.value(type='hidden') }}
+                                        <button type="submit" name="submit" class="btn btn-info">
+                                                <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
+                                            </button>
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ dislike_form.hidden_tag() }}
+                                        {{ dislike_form.anecdote_id(type='hidden') }}
+                                        {{ dislike_form.value(type='hidden') }}
+                                        <button type="submit" name="submit" class="btn btn-danger">
+                                                <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
+                                            </button>
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </div>
-        <br>
-        {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
+    <br>
     <div>
         <nav aria-label="Page navigation example">
             <ul class="pagination">

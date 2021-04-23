@@ -13,9 +13,10 @@ class Anecdote(SqlAlchemyBase):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'))
     rating = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    is_published = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    is_published = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
     user = orm.relation('User')
     category = orm.relation('Category')
 
     comments = orm.relation("Comment", back_populates='anecdote')
+    likes = orm.relation('Like', back_populates='anecdote')

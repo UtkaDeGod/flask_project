@@ -16,26 +16,26 @@
                         </div>
                         <div>
                             {{ form.name.label() }}
-                            {{ form.name(class="form-control") }}
+                            {{ form.name(class="form-control", value=anecdote.name) }}
                             {% for error in form.name.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}
 
                             {{ form.text.label() }}
-                            {{ form.text(class="form-control") }}
+                            <textarea class="form-control">{{ anecdote.text.replace('<br>', ord(13)) }}</textarea>
                             {% for error in form.text.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}
 
                             {{ form.category.label() }}
-                            {{ form.category(class="form-control") }}
+                            {{ form.category(class="form-control", value=anecdote.category.id) }}
                             {% for error in form.category.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}
 
                             <br>
 
-                            {{ form.submit(class="btn btn-primary") }}
+                            {{ form.submit(class="btn btn-primary", value='Сохранить') }}
                             {% for error in form.submit.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}
