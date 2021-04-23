@@ -20,6 +20,7 @@ class UsersListResource(Resource):
         keys = ["name", "email", "password"]
         json_data = request.json["data"]
         invalid = []
+        valid = []
         db_sess = db_session.create_session()
 
         for data in json_data:
@@ -35,6 +36,7 @@ class UsersListResource(Resource):
                             email=data["email"])
                 user.set_password(data["password"])
                 db_sess.add(user)
+                valid.append({"id": user.id, "email": user.email})
             except Exception:
                 invalid.append({**data})
 
@@ -46,7 +48,7 @@ class UsersListResource(Resource):
             }), 400)
 
         db_sess.commit()
-        return make_response(jsonify({"response": "creation was successful"}), 201)
+        return make_response(jsonify({"users": valid}), 201)
 
 
 class UsersResource(Resource):
@@ -140,4 +142,4 @@ class UsersRegistrationResource(Resource):
             return make_response(jsonify({"error": "bad request"}), 400)
 
         db_sess.commit()
-        return make_response(jsonify({"response": "creation was successful"}), 201)
+        return make_response(jsonify({"id": user.id, "email": user.email}), 201)

@@ -1,6 +1,7 @@
 import sqlalchemy
 from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
+from sqlalchemy.orm import validates
 
 
 class Like(SqlAlchemyBase):
@@ -13,3 +14,8 @@ class Like(SqlAlchemyBase):
 
     user = orm.relation('User')
     anecdote = orm.relation('Anecdote')
+
+    @validates("value")
+    def validate_value(self, key, value):
+        assert value in [-1, 0, 1]
+        return value

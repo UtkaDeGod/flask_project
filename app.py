@@ -4,8 +4,8 @@ from data.users import User
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 from data import db_session
-from api import anecdotes_resource
-from api import users_resource
+from api import anecdotes_resource, users_resource, comments_resource,\
+    categories_resource, likes_resource
 from flask_restful import Api
 
 
@@ -58,9 +58,15 @@ def register():
   
 api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
 api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes/page")
+api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate/<int:anecdote_id>")
+
 api.add_resource(users_resource.UsersListResource, "/api/users")
 api.add_resource(users_resource.UsersResource, "/api/users/<int:user_id>")
 api.add_resource(users_resource.UsersRegistrationResource, "/api/users/personal_register")
+
+api.add_resource(categories_resource.CategoriesResource, "/api/categories")
+api.add_resource(comments_resource.CommentsResource, "/api/comments")
+api.add_resource(likes_resource.LikesResource, "/api/likes")
 
 if __name__ == '__main__':
     db_session.global_init('db/anecdotes.db')
