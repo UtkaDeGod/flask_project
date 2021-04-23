@@ -2,6 +2,7 @@
 main.py
 test.py
 /static/img/avatars/2.png
+/static/img/avatars/1.png
 templates/moder.html
 templates/main_page.html
 templates/user_page.html
