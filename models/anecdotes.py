@@ -1,11 +1,11 @@
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
-from .db_session import SqlAlchemyBase
+from data.db_session import SqlAlchemyBase
 from sqlalchemy import orm
 from sqlalchemy.orm import validates
 
 
-class Anecdote(SqlAlchemyBase, SerializerMixin):
+class Anecdote(SqlAlchemyBase):
     __tablename__ = 'anecdotes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -13,7 +13,7 @@ class Anecdote(SqlAlchemyBase, SerializerMixin):
     text = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
-    category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'), nullable=False)
+    category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'))
     rating = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     is_published = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
@@ -21,6 +21,8 @@ class Anecdote(SqlAlchemyBase, SerializerMixin):
     category = orm.relation('Category')
 
     comments = orm.relation("Comment", back_populates='anecdote')
+    likes = orm.relation('Like', back_populates='anecdote')
+
 
     @validates("is_published")
     def validate_is_published(self, key, is_published):

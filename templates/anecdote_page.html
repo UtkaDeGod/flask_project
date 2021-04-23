@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+    </div>
+    <div class="card-body">
+        <h3>{{ anecdote.name }}</h3>
+        <p>{{ anecdote.text }}</p>
+        <!-- лайки и дизлайки -->
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <form method="post">
+                        {{ like_form.hidden_tag() }}
+                        {{ like_form.value(type='hidden', value=1) }}
+                        <button type="submit" id="like-submit" class="btn btn-info">
+                            <img src="{{ url_for('static', filename='img/like.png') }}" width="20"
+                                 height="20">
+                        </button>
+                        <div class="field"></div>
+                    </form>
+                </div>
+
+                <div class="col-2">
+                    <form method="post" id="form" action="">
+                        {{ dislike_form.hidden_tag() }}
+                        {{ dislike_form.value(type='hidden', value=-1) }}
+                        <button type="submit" id="dislike-submit" class="btn btn-danger">
+                            <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20"
+                                 height="20">
+                        </button>
+                        <div class="field"></div>
+                    </form>
+                </div>
+                {{ anecdote.rating }}
+                <div class="col-xl"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<ul>
+    {% if current_user.is_authenticated %}
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ url_for('static', filename=current_user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ current_user.name }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ comment_form.hidden_tag() }}
+                    {{ comment_form.text(class='form-control') }}<br>
+                    {{ comment_form.submit(class='btn btn-success') }}
+                </form>
+            </div>
+        </div>
+        <br>
+    {% endif %}
+    {% for comment in comments %}
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ url_for('static', filename=comment.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ comment.user.name }}</label>
+            </div>
+            <div class="card-body">
+                {{ comment.text|safe }}
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+</ul>
+{% endblock %}

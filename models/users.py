@@ -1,8 +1,8 @@
 import sqlalchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from data.db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
-from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
@@ -13,10 +13,11 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    picture_path = sqlalchemy.Column(sqlalchemy.String, default='pic_path.png')
+    picture_path = sqlalchemy.Column(sqlalchemy.String, default='./img/avatars/default.jpg')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    is_banned = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
-    anecdotes = orm.relation('Anecdote', back_populates='user')
+    anecdotes = orm.relation('Anecdote', cascade="all, delete-orphan", back_populates='user')
     comments = orm.relation('Comment', back_populates='user')
     likes = orm.relation('Like', back_populates='user')
 

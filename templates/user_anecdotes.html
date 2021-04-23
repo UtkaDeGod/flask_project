@@ -1,23 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-2">
-        <div class="list-group">
-            {% for category in categories %}
-                {% if select_category and category.id == select_category.id %}
-                    <a class="list-group-item list-group-item-action active" href="/{{ category.id }}">
-                {% else %}
-                    <a class="list-group-item list-group-item-action" href="/{{ category.id }}">
-                {% endif %}
-                    {{ category.title }}
-                </a>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="col">
-        <ul>
-            {% for anecdote, like_form, dislike_form in anecdotes.values() %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    <form name="search_form" id="search_form" method="get" class="d-flex">
+                        <input type="search" class="form-control me-2" name="search_line" id="search_line" value="{{ search_line }}">
+                        <input type="submit" class="btn btn-success" name="search_submit" id="search_submit" value="Искать">
+                    </form>
+                </li>
+            </ul>
+            {% for anecdote, like_form, dislike_form, edit_form in anecdotes.values() %}
+                <br>
                 <!-- блок анекдота -->
                 <div class="card" id="{{ anecdote.id }}">
                     <div class="card-header">
@@ -28,44 +24,42 @@
                     <div class="card-body">
                         <h3>{{ anecdote.name }}</h3>
                         <p>{{ anecdote.text|safe }}</p>
-                    </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-2">
-                                <form method="post">
-                                    {{ like_form.hidden_tag() }}
-                                    {{ like_form.anecdote_id(type='hidden') }}
-                                    {{ like_form.value(type='hidden') }}
-                                    <button type="submit" name="submit" class="btn btn-info">
-                                            <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
-                                        </button>
-                                    <div class="field"></div>
-                                </form>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ like_form.hidden_tag() }}
+                                        {{ like_form.anecdote_id(type='hidden') }}
+                                        {{ like_form.value(type='hidden') }}
+                                        <button type="submit" name="submit" class="btn btn-info">
+                                                <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
+                                            </button>
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+                                <div class="col-2">
+                                    <form method="post">
+                                        {{ dislike_form.hidden_tag() }}
+                                        {{ dislike_form.anecdote_id(type='hidden') }}
+                                        {{ dislike_form.value(type='hidden') }}
+                                        <button type="submit" name="submit" class="btn btn-danger">
+                                                <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
+                                            </button>
+                                        <div class="field"></div>
+                                    </form>
+                                </div>
+                                <div class="col-2">
+                                    <a type="button" class="btn btn-primary" href="/anecdote/edit/{{ anecdote.id }}">
+                                        Редактровать
+                                    </a>
+                                </div>
                             </div>
-                            <div class="col-2">
-                                <form method="post">
-                                    {{ dislike_form.hidden_tag() }}
-                                    {{ dislike_form.anecdote_id(type='hidden') }}
-                                    {{ dislike_form.value(type='hidden') }}
-                                    <button type="submit" name="submit" class="btn btn-danger">
-                                            <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
-                                        </button>
-                                    <div class="field"></div>
-                                </form>
-                            </div>
-                            <div class="col-2">
-                                <a class="btn btn-primary" href="/anecdote/{{ anecdote.id }}">Комментарии</a>
-                            </div>
-                            <div class="col-xl"></div>
                         </div>
-                        <br>
                     </div>
                 </div>
-                <br>
             {% endfor %}
-        </ul>
+        </div>
     </div>
-    <br>
     <div>
         <nav aria-label="Page navigation example">
             <ul class="pagination">
@@ -75,11 +69,13 @@
                             <form method="get" id="pagination" name="pagination">
                                 <li class="page-item active"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
                                 <input type="hidden" value="{{ button }}" id="page" name="page">
+                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
                             </form>
                         {% else %}
                             <form method="get" id="pagination" name="pagination">
                                 <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
                                 <input type="hidden" value="{{ button }}" id="page" name="page">
+                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
                             </form>
                         {% endif %}
                     {% elif button == '...' %}
@@ -91,6 +87,7 @@
                             <form method="get" id="pagination" name="pagination">
                                 <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
                                 <input type="hidden" value="{{ page + 1 }}" id="page" name="page">
+                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
                             </form>
                         {% endif %}
                     {% elif button == 'Previous' %}
@@ -100,6 +97,7 @@
                             <form method="get" id="pagination" name="pagination">
                                 <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
                                 <input type="hidden" value="{{ page - 1 }}" id="page" name="page">
+                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
                             </form>
                         {% endif %}
                     {% endif %}
