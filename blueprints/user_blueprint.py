@@ -75,7 +75,7 @@ def user_anecdotes():
         order_by(Anecdote.created_date.desc())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, anecdotes)
 
-    anecdotes = search_anecdotes(db_sess, anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
         anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
@@ -110,7 +110,7 @@ def user_anecdotes():
 def user_profile():
     form = EditUserForm()
     db_sess = create_session()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         if current_user.check_password(form.old_password.data):
             user = db_sess.query(User).get(current_user.id)
             if form.user_picture.data is not None:
@@ -124,13 +124,15 @@ def user_profile():
                     im = im.crop((0, corr, width, corr + width))
                 im.save(f'./static/img/avatars/{user.id}.png')
                 user.picture_path = f'./img/avatars/{user.id}.png'
-            else:
-                user.picture_path = f'./img/avatars/default.jpg'
             user.name = form.name.data
             user.email = form.email.data
             db_sess.commit()
+        else:
+            return render_template('user_profile.html', form=form,
+                                   message='Введённый пароль не совпадает со старым паролем')
+    elif request.method == 'POST' and not form.validate_on_submit():
         return render_template('user_profile.html', form=form,
-                               message='Введённый пароль не совпадает со старым паролем')
+                               message='Введите правильный email')
     return render_template('user_profile.html', form=form)
 
 
@@ -147,7 +149,7 @@ def likes_anecdotes():
     print(likes.all())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, likes)
     anecdotes = [like.anecdote for like in likes]
-    anecdotes = search_anecdotes(db_sess, anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
         anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
