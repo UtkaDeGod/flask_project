@@ -51,7 +51,6 @@ def create_list_anecdotes_for_moderation(anecdotes):
         accept_form = AcceptForm(prefix=f'accept_form{anecdote.id}')
         reject_form = RejectForm(prefix=f'reject_form{anecdote.id}')
         accept_form.anecdote_id.data = reject_form.anecdote_id.data = str(anecdote.id)
-        print(accept_form.anecdote_id.data, reject_form.anecdote_id.data)
         anecdotes[i] = (anecdote.id, (anecdote, accept_form, reject_form))
     return dict(anecdotes)
 

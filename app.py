@@ -3,8 +3,10 @@ from flask_login import LoginManager
 from data.db_session import create_session, global_init
 from models.users import User
 from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint
-from data import anecdotes_resource
+from api import anecdotes_resource, users_resource, comments_resource,\
+    categories_resource, likes_resource
 from flask_restful import Api
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'aleksey_lox))))_228'
@@ -23,9 +25,17 @@ def load_user(user_id):
     return None
 
 
-api.add_resource(anecdotes_resource.AnecdotesResource, "/anecdote")
-api.add_resource(anecdotes_resource.AnecdotesListResource, "/anecdotes/page")
-api.add_resource(anecdotes_resource.AnecdotesTopResource, "/anecdotes/top")
+api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
+api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes/page")
+api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate/<int:anecdote_id>")
+
+api.add_resource(users_resource.UsersListResource, "/api/users")
+api.add_resource(users_resource.UsersResource, "/api/users/<int:user_id>")
+api.add_resource(users_resource.UsersRegistrationResource, "/api/users/personal_register")
+
+api.add_resource(categories_resource.CategoriesResource, "/api/categories")
+api.add_resource(comments_resource.CommentsResource, "/api/comments")
+api.add_resource(likes_resource.LikesResource, "/api/likes")
 
 if __name__ == '__main__':
     global_init('db/anecdotes.db')

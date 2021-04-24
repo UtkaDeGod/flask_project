@@ -1,6 +1,7 @@
 import sqlalchemy
 from data.db_session import SqlAlchemyBase
 from sqlalchemy import orm
+from sqlalchemy.orm import validates
 
 
 class Anecdote(SqlAlchemyBase):
@@ -20,3 +21,8 @@ class Anecdote(SqlAlchemyBase):
 
     comments = orm.relation("Comment", back_populates='anecdote')
     likes = orm.relation('Like', back_populates='anecdote')
+
+    @validates("is_published")
+    def validate_is_published(self, key, is_published):
+        assert is_published in [0, 1, 2]
+        return is_published
