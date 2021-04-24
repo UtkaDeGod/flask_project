@@ -7,8 +7,7 @@ PERIODS = ["all_time", "year", "month", "week", "day"]
 
 
 def anecdote(update, context):
-    # TODO: норм url вставить
-    response = requests.get("http://127.0.0.2:5000/anecdote")
+    response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdote")
     if response.status_code != 200:
         update.message.reply_text("Анекдота не будет, БД приняла ислам(ничего не найдено)")
         return
@@ -42,9 +41,9 @@ def top_request(update, context):
     query = update.callback_query
     query.answer()
     if not query.data:
-        response = requests.get("http://127.0.0.2:5000/anecdotes/top")
+        response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdotes/top")
     else:
-        response = requests.get("http://127.0.0.2:5000/anecdotes/top",
+        response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdotes/top",
                                 json={"period": PERIODS[int(query.data)]})
     if response.status_code != 200:
         query.edit_message_text(text="Топа не будет, БД приняла ислам")

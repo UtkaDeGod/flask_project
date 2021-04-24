@@ -9,7 +9,7 @@ from .auth import auth
 class UsersListResource(Resource):
     @auth.login_required
     def post(self):
-        if not auth.current_user().is_admin:
+        if not auth.current_user().is_admin or auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         if not request.json:
@@ -28,15 +28,16 @@ class UsersListResource(Resource):
                 invalid.append({**data})
                 continue
 
-            if db_sess.query(User).filter(User.email == data["email"]).first():
-                invalid.append({**data})
-                continue
             try:
+                if db_sess.query(User).filter(User.email == data["email"]).first():
+                    invalid.append({**data})
+                    continue
+
                 user = User(name=data["name"],
                             email=data["email"])
                 user.set_password(data["password"])
                 db_sess.add(user)
-                valid.append({"id": user.id, "email": user.email})
+                valid.append({"email": user.email})
             except Exception:
                 invalid.append({**data})
 
@@ -54,7 +55,8 @@ class UsersListResource(Resource):
 class UsersResource(Resource):
     @auth.login_required
     def get(self, user_id):
-        if not auth.current_user().is_admin and auth.current_user().id != user_id:
+        if not auth.current_user().is_admin and auth.current_user().id != user_id or \
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         db_sess = db_session.create_session()
@@ -71,7 +73,8 @@ class UsersResource(Resource):
 
     @auth.login_required
     def delete(self, user_id):
-        if not auth.current_user().is_admin and auth.current_user().id != user_id:
+        if not auth.current_user().is_admin or\
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         db_sess = db_session.create_session()
@@ -80,14 +83,15 @@ class UsersResource(Resource):
         if not user:
             return make_response(jsonify({"error": "user not found"}), 404)
 
-        db_sess.delete(user)
+        user.is_banned = True
         db_sess.commit()
 
-        return make_response(jsonify({"answer": "delete was successful"}), 200)
+        return make_response(jsonify({"banned_id": user.id}), 200)
 
     @auth.login_required
     def patch(self, user_id):
-        if not auth.current_user().is_admin and auth.current_user().id != user_id:
+        if not auth.current_user().is_admin and auth.current_user().id != user_id or\
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         db_sess = db_session.create_session()
@@ -142,4 +146,4 @@ class UsersRegistrationResource(Resource):
             return make_response(jsonify({"error": "bad request"}), 400)
 
         db_sess.commit()
-        return make_response(jsonify({"id": user.id, "email": user.email}), 201)
+        return make_response(jsonify({"email": user.email}), 201)
