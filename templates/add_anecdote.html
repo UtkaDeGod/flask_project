@@ -22,7 +22,7 @@
                             {% endfor %}
 
                             {{ form.text.label() }}
-                            {{ form.text(class="form-control") }}
+                            {{ form.text(class="form-control", style="height: 300px;") }}
                             {% for error in form.text.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}

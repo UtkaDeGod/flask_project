@@ -52,7 +52,7 @@
             <div class="card-body">
                 <form method="post">
                     {{ comment_form.hidden_tag() }}
-                    {{ comment_form.text(class='form-control') }}<br>
+                    {{ comment_form.text(class='form-control', style="height: 150px;") }}<br>
                     {{ comment_form.submit(class='btn btn-success') }}
                 </form>
             </div>
