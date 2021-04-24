@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
-from data.db_session import *
+from data.db_session import create_session
 from models.anecdotes import Anecdote
 from models.users import User
 from forms.login_form import LoginForm
@@ -9,7 +9,6 @@ from forms.edit_user_form import EditUserForm
 from models.likes import Like
 from PIL import Image
 from data.system_functions import search_anecdotes, create_buttons_of_pagination
-from math import ceil
 
 blueprint = Blueprint(
     'user',
@@ -75,7 +74,7 @@ def user_anecdotes():
         order_by(Anecdote.created_date.desc())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, anecdotes)
 
-    anecdotes = search_anecdotes(db_sess, anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
         anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
@@ -95,11 +94,6 @@ def user_anecdotes():
             like.value = value if like.value != int(value) else 0
             db_sess.add(like)
             db_sess.commit()
-        if anecdote[3].validate_on_submit():
-            for key in ['name', 'text', 'category_id']:
-                setattr(anecdote[0], key, getattr(anecdote[3], key).data)
-            anecdote[0].is_published = 0
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('user_anecdotes.html', anecdotes=anecdotes, pagination=pagination,
                            page=page, pages_count=pages_count, search_line=search_line)
@@ -110,7 +104,7 @@ def user_anecdotes():
 def user_profile():
     form = EditUserForm()
     db_sess = create_session()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         if current_user.check_password(form.old_password.data):
             user = db_sess.query(User).get(current_user.id)
             if form.user_picture.data is not None:
@@ -124,13 +118,15 @@ def user_profile():
                     im = im.crop((0, corr, width, corr + width))
                 im.save(f'./static/img/avatars/{user.id}.png')
                 user.picture_path = f'./img/avatars/{user.id}.png'
-            else:
-                user.picture_path = f'./img/avatars/default.jpg'
             user.name = form.name.data
             user.email = form.email.data
             db_sess.commit()
+        else:
+            return render_template('user_profile.html', form=form,
+                                   message='Введённый пароль не совпадает со старым паролем')
+    elif request.method == 'POST' and not form.validate_on_submit():
         return render_template('user_profile.html', form=form,
-                               message='Введённый пароль не совпадает со старым паролем')
+                               message='Введите правильный email')
     return render_template('user_profile.html', form=form)
 
 
@@ -144,10 +140,9 @@ def likes_anecdotes():
     likes = db_sess.query(Like).join(Anecdote).filter(Like.user == current_user, Like.value == 1,
                                                       Anecdote.name.like(f'%{search_line}%')). \
         order_by(Anecdote.created_date.desc())
-    print(likes.all())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, likes)
     anecdotes = [like.anecdote for like in likes]
-    anecdotes = search_anecdotes(db_sess, anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
         anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])

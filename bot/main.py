@@ -1,6 +1,6 @@
 import requests
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
 
 PERIODS = ["all_time", "year", "month", "week", "day"]
@@ -61,7 +61,7 @@ def help(update, context):
 
 def main():
     # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
-    updater = Updater(TOKEN, use_context=True)
+    updater = Updater('TOKEN', use_context=True)
 
     dp = updater.dispatcher
 

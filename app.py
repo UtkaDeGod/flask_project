@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
-from data.db_session import *
+from data.db_session import create_session, global_init
 from models.users import User
 from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint
 from api import anecdotes_resource, users_resource, comments_resource,\
@@ -24,7 +24,7 @@ def load_user(user_id):
         return user
     return None
 
-  
+
 api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
 api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes/page")
 api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate/<int:anecdote_id>")

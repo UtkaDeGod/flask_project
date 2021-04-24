@@ -22,7 +22,7 @@
                             {% endfor %}
 
                             {{ form.text.label() }}
-                            <textarea class="form-control">{{ anecdote.text.replace('<br>', ord(13)) }}</textarea>
+                            <textarea name="text" class="form-control" style="height: 300px;">{{ text_anecdote|safe }}</textarea>
                             {% for error in form.text.errors %}
                             <div class="error">{{ error }}</div>
                             {% endfor %}

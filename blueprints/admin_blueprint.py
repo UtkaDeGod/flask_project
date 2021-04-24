@@ -1,10 +1,11 @@
-from flask import render_template, request, abort, Blueprint, make_response, session, redirect
+from flask import render_template, request, abort, Blueprint, make_response, redirect
 from flask_login import login_required, current_user
-from data.db_session import *
+from data.db_session import create_session
 from forms.add_category_form import AddCategoryForm
 from models.anecdotes import Anecdote
 from models.categories import Category
-from data.system_functions import search_categories, search_users, create_list_anecdotes_for_moderation, create_buttons_of_pagination
+from data.system_functions import search_categories, search_users, create_list_anecdotes_for_moderation
+from data.system_functions import create_buttons_of_pagination
 from models.users import User
 
 blueprint = Blueprint(

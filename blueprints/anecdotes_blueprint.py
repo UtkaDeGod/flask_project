@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, Blueprint, abort
 from flask_login import login_required, current_user
-from data.db_session import *
+from data.db_session import create_session
 from forms.add_anecdote_form import AddAnecdoteForm
 from forms.comment_form import CommentForm
 from forms.like_form import LikeForm
@@ -96,8 +96,9 @@ def add_anecdote():
     form = AddAnecdoteForm()
     form.category.choices = [(category.id, category.title) for category in db_sess.query(Category).all()]
     if form.validate_on_submit():
+        anecdote_text = bleach.clean(form.text.data).replace(chr(13), '').replace('\n', '<br>')
         anecdote = Anecdote(category_id=form.category.data, created_date=datetime.now(),
-                            name=form.name.data, text=form.text.data, user_id=current_user.id)
+                            name=form.name.data, text=anecdote_text, user_id=current_user.id)
         db_sess.add(anecdote)
         db_sess.commit()
         return redirect('/')
@@ -107,6 +108,8 @@ def add_anecdote():
 @blueprint.route('/anecdote/<int:anecdote_id>', methods=['GET', 'POST'])
 def anecdote_page(anecdote_id):
     db_sess = create_session()
+    comment_id = int(request.args.get('comment_id', '-1'))
+
     anecdote = db_sess.query(Anecdote).get(anecdote_id)
     context = {}
     if anecdote is not None:
@@ -134,6 +137,13 @@ def anecdote_page(anecdote_id):
             comment = Comment(text=text, user_id=current_user.id, anecdote_id=anecdote_id, created_date=datetime.now())
             db_sess.add(comment)
             db_sess.commit()
+        if comment_id != -1:
+            comment = db_sess.query(Comment).get(comment_id)
+            if comment is not None:
+                db_sess.delete(comment)
+                db_sess.commit()
+                return redirect('')
+
         comments = db_sess.query(Comment).filter(Comment.anecdote == anecdote).all()
         context = {'like_form': like_form, 'dislike_form': dislike_form, 'comment_form': comment_form,
                    'comments': comments, 'anecdote': anecdote}
@@ -151,10 +161,13 @@ def edit_anecdote(anecdote_id):
 
     edit_anecdote_form = AddAnecdoteForm()
     edit_anecdote_form.category.choices = [(category.id, category.title) for category in categories]
+    text_anecdote = anecdote.text.replace('<br>', chr(13))
 
     if edit_anecdote_form.validate_on_submit():
         anecdote.name = edit_anecdote_form.name.data
         anecdote.text = bleach.clean(edit_anecdote_form.text.data).replace(chr(13), '').replace('\n', '<br>')
         anecdote.category_id = edit_anecdote_form.category.data
+        text_anecdote = anecdote.text.replace('<br>', chr(13))
         db_sess.commit()
-    return render_template('edit_anecdote.html', form=edit_anecdote_form, anecdote=anecdote)
+    return render_template('edit_anecdote.html', form=edit_anecdote_form, anecdote=anecdote,
+                           text_anecdote=text_anecdote)

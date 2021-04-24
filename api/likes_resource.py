@@ -2,7 +2,6 @@ from flask_restful import Resource
 from flask import jsonify, make_response, request
 
 from data import db_session
-from models.users import User
 from models.anecdotes import Anecdote
 from models.likes import Like
 from .auth import auth

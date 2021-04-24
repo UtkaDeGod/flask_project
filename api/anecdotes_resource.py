@@ -20,7 +20,7 @@ class AnecdotesResource(Resource):
     def get(self):
         db_sess = db_session.create_session()
 
-        ids = db_sess.query(Anecdote.id).filter(Anecdote.is_published == True).all()
+        ids = db_sess.query(Anecdote.id).filter(Anecdote.is_published == 1).all()
         if not ids:
             return make_response(jsonify({"error": "anecdote not found"}), 404)
 
@@ -75,7 +75,7 @@ class AnecdotesListResource(Resource):
             page = request.json["page"]
             anecdotes = db_sess.query(Anecdote).offset((page - 1) * 20).limit(20).all()
             return make_response(jsonify({"anecdotes": anecdotes}), 200)
-        except Exception as e:
+        except Exception:
             return make_response(jsonify({"error": "validation error"}), 400)
 
     @auth.login_required
@@ -185,7 +185,7 @@ class AnecdotesModerateResource(Resource):
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         db_sess = db_session.create_session()
-        anecdotes = db_sess.query(Anecdote).filter(Anecdote.is_published == False)
+        anecdotes = db_sess.query(Anecdote).filter(Anecdote.is_published == 0)
 
         resp = []
         for anecdote in anecdotes:

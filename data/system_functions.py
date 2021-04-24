@@ -1,14 +1,9 @@
 from math import ceil
-
-from models.users import User
-from forms.edit_anecdote_form import EditAnecdoteForm
 from forms.delete_category_form import DeleteCategoryForm
 from forms.admin_user_edit_form import AdminUserEditForm
 from forms.like_form import LikeForm
 from forms.accept_form import AcceptForm
 from forms.reject_form import RejectForm
-from models.anecdotes import Anecdote
-from models.categories import Category
 
 
 def search_users(users):
@@ -27,20 +22,16 @@ def search_categories(categories):
     return dict(categories)
 
 
-def search_anecdotes(db_sess, anecdotes):
-    categories = db_sess.query(Category).all()
+def search_anecdotes(anecdotes):
     for i, anecdote in enumerate(anecdotes):
         like_form = LikeForm(prefix=f'like_form{anecdote.id}')
         dislike_form = LikeForm(prefix=f'dislike_form{anecdote.id}')
 
-        edit_form = EditAnecdoteForm(prefix=f'edit_form{anecdote.id}')
-        edit_form.category_id.choices = [(category.id, category.title) for category in categories]
-
-        dislike_form.anecdote_id.data = like_form.anecdote_id.data = edit_form.anecdote_id.data = anecdote.id
+        dislike_form.anecdote_id.data = like_form.anecdote_id.data = anecdote.id
         like_form.value.data = 1
         dislike_form.value.data = -1
 
-        anecdotes[i] = (anecdote.id, (anecdote, like_form, dislike_form, edit_form))
+        anecdotes[i] = (anecdote.id, (anecdote, like_form, dislike_form))
     return dict(anecdotes)
 
 
@@ -60,7 +51,6 @@ def create_list_anecdotes_for_moderation(anecdotes):
         accept_form = AcceptForm(prefix=f'accept_form{anecdote.id}')
         reject_form = RejectForm(prefix=f'reject_form{anecdote.id}')
         accept_form.anecdote_id.data = reject_form.anecdote_id.data = str(anecdote.id)
-        print(accept_form.anecdote_id.data, reject_form.anecdote_id.data)
         anecdotes[i] = (anecdote.id, (anecdote, accept_form, reject_form))
     return dict(anecdotes)
 
