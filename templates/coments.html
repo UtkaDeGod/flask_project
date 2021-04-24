@@ -1,0 +1,72 @@
+{% extends "main_shablon.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+        <label for="ava" style="font-size:150%">Лёха</label>
+        <big style="float: right;">Рейтинг {{ anecdote.rating }}</big>
+    </div>
+    <div class="card-body">
+        <h3>Про мусор</h3>
+        <p>После того как омоновцев стали называть космонавтами словосочетание космический мусор для
+            меня заиграло новыми красками.</p>
+        <!-- лайки и дизлайки -->
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <form method="post" id="form" action="">
+                        <input type="hidden" name="appraisal" value="1">
+                        <button type="submit" id="like" class="btn btn-info">
+                            <img src="{{ url_for('static', filename='img/heart.png') }}" width="20"
+                                 height="20">
+                        </button>
+                        <label for="like">0</label>
+                        <div class="field"></div>
+                    </form>
+                </div>
+
+                <div class="col-2">
+                    <form method="post" id="form" action="">
+                        <input type="hidden" name="appraisal" value="0">
+                        <button type="submit" id="dislike" class="btn btn-danger">
+                            <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20"
+                                 height="20">
+                        </button>
+                        <label for="dislike">0</label>
+                        <div class="field"></div>
+                    </form>
+                </div>
+                <div class="col-xl"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<ul>
+    <li>
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">Лёха</label>
+            </div>
+            <div class="card-body">
+                анедот хуйня
+            </div>
+        </div>
+    </li>
+    <br>
+
+    <li>
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ avatar }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">Лёха</label>
+            </div>
+            <div class="card-body">
+                анедот охуительный
+            </div>
+        </div>
+    </li>
+</ul>
+{% endblock %}

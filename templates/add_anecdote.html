@@ -1,54 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col">
+    <form action="" method="post" novalidate>
+        <div>
+            {{ form.csrf_token }}
         </div>
-        <div class="col">
-            <br>
-            <br>
-            <div class="card">
-                <div class="card-body">
-                    <form action="" method="post" novalidate>
-                        <div>
-                            {{ form.csrf_token }}
-                        </div>
-                        <div>
-                            {{ form.name.label() }}
-                            {{ form.name(class="form-control") }}
-                            {% for error in form.name.errors %}
-                            <div class="error">{{ error }}</div>
-                            {% endfor %}
-
-                            {{ form.text.label() }}
-                            {{ form.text(class="form-control", style="height: 300px;") }}
-                            {% for error in form.text.errors %}
-                            <div class="error">{{ error }}</div>
-                            {% endfor %}
-
-                            {{ form.category.label() }}
-                            {{ form.category(class="form-control") }}
-                            {% for error in form.category.errors %}
-                            <div class="error">{{ error }}</div>
-                            {% endfor %}
-
-                            <br>
-
-                            {{ form.submit(class="btn btn-primary") }}
-                            {% for error in form.submit.errors %}
-                            <div class="error">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </form>
-                    <br>
-                    <div class="alert-danger">{{ message }}</div>
-                </div>
+        {% for field in form if field.name != 'csrf_token'%}
+            <div>
+                {{ field.label() }}
+                {{ field() }}
+                {% for error in field.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
             </div>
-        </div>
-        <div class="col">
-        </div>
-    </div>
-</div>
-
+        {% endfor %}
+    </form>
 {% endblock %}

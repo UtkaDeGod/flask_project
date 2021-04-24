@@ -13,31 +13,40 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary">
     <div class="container-xxl">
-        <a class="navbar-brand" href="/">Ржомба.рф</a>
+        <a class="navbar-brand" href="/">Анекдоты от алексея</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-            <a class="btn btn-warning" href="/anecdote/add">Предложить анекдот</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="https://www.youtube.com/watch?v=hmgq5kOEY10">Подписки</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Свежие анекдоты</a>
+                </li>
+            </ul>
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Поиск анекдота" aria-label="Search">
+                <button class="btn btn-warning" type="submit">Искать</button>
+            </form>
             <p style="color:#0D6EFD">000</p>
             {% if current_user.is_authenticated %}
                 <ui class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ url_for('static', filename=current_user.picture_path) }}" width="50" height="30" style="border-radius: 50%"
+                        <img src="{{ url_for('static', filename=current_user.picture_path) }}" alt="" width="50" height="30" style="border-radius: 50%"
                              class="d-inline-block align-text-top img-thumbnail">
                         {{ current_user.name }}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="/user/profile">Мой профиль</a></li>
                         <li><a class="dropdown-item" href="/user/anecdotes">Мои анекдоты</a></li>
-                        <li><a class="dropdown-item" href="/user/likes">Понравившиеся анекдоты</a></li>
+                        <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=wl-YP_c6EkE">Лайкнутые</a></li>
                         {% if current_user.is_admin %}
                             <li><a class="dropdown-item" href="/admin/edit/categories">Редактировать категории</a></li>
                             <li><a class="dropdown-item" href="/admin/edit/users">Редактировать пользователей</a></li>
-                            <li><a class="dropdown-item" href="/admin">Модерация</a></li>
                         {% endif %}
                         <li>
                             <hr class="dropdown-divider">

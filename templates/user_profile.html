@@ -10,45 +10,44 @@
             <br>
             <div class="card">
                 <div class="card-body">
-                    <form action="" method="post" enctype="multipart/form-data">
-                        <div>
-                            {{ form.csrf_token }}
-                        </div>
-                        <input type="hidden" value="{{ userid }}" name="userid">
-                        <div class="form-group">
-                            {{ form.name.label() }}
-                            {{ form.name(value=current_user.name, class="form-control") }}
-                        </div>
-                        <br>
-                        <div class="form-group">
-                            {{ form.email.label() }}
-                            {{ form.email(value=current_user.email, class="form-control") }}
-                        </div>
-                        <br>
-                        <div class="form-group">
+                <form action="" method="post" enctype="multipart/form-data">
+                    <div>
+                        {{ form.csrf_token }}
+                    </div>
+                    <input type="hidden" value="{{ userid }}" name="userid">
+                    <div class="form-group">
+                        {{ form.name.label() }}
+                        {{ form.name(value=current_user.name, class="form-control") }}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        {{ form.email.label() }}
+                        {{ form.email(value=current_user.email, class="form-control") }}
+                    </div>
+                    <br>
+                    <div class="form-group">
 
-                            {{ form.old_password.label() }}
-                            {{ form.old_password(class="form-control") }}
-                        </div>
-                        <br>
-                        <div class="form-group">
-                            {{ form.user_picture.label(class="form-label") }}
-                            {{ form.user_picture(class="form-control") }}
-                        </div>
-                        <br>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
-                                                    Редактровать
-                        </button>
-                        <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    {{ form.submit(class="btn btn-primary") }}
-                                </div>
+                        {{ form.old_password.label() }}
+                        {{ form.old_password(class="form-control") }}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        {{ form.user_picture.label(class="form-label") }}
+                        {{ form.user_picture(class="form-control") }}
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm">
+                                                Редактровать
+                    </button>
+                    <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                {{ form.submit(class="btn btn-primary") }}
                             </div>
                         </div>
-                    </form>
-                    <br><div class="alert-danger">{{ message }}</div>
+                    </div>
+                </form>
                 </div>
             </div>
         </div>
