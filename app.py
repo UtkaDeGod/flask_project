@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
-from data.db_session import *
+from data.db_session import create_session, global_init
 from models.users import User
 from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint
 from data import anecdotes_resource

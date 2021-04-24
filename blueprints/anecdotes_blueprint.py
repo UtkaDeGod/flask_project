@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, Blueprint, abort
 from flask_login import login_required, current_user
-from data.db_session import *
+from data.db_session import create_session
 from forms.add_anecdote_form import AddAnecdoteForm
 from forms.comment_form import CommentForm
 from forms.like_form import LikeForm

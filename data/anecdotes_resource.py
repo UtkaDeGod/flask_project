@@ -43,7 +43,7 @@ class AnecdotesListResource(Resource):
             page = request.json["page"]
             anecdotes = db_sess.query(Anecdote).offset((page - 1) * 20).limit(20).all()
             return make_response(jsonify({"anecdotes": anecdotes}), 200)
-        except Exception as e:
+        except Exception:
             return make_response(jsonify({"error": "validation error"}), 400)
 
 

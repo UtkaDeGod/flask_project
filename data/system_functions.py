@@ -4,7 +4,6 @@ from forms.admin_user_edit_form import AdminUserEditForm
 from forms.like_form import LikeForm
 from forms.accept_form import AcceptForm
 from forms.reject_form import RejectForm
-from models.categories import Category
 
 
 def search_users(users):

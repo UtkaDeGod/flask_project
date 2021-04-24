@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
-from data.db_session import *
+from data.db_session import create_session
 from models.anecdotes import Anecdote
 from models.users import User
 from forms.login_form import LoginForm
@@ -9,7 +9,6 @@ from forms.edit_user_form import EditUserForm
 from models.likes import Like
 from PIL import Image
 from data.system_functions import search_anecdotes, create_buttons_of_pagination
-from math import ceil
 
 blueprint = Blueprint(
     'user',
@@ -95,11 +94,6 @@ def user_anecdotes():
             like.value = value if like.value != int(value) else 0
             db_sess.add(like)
             db_sess.commit()
-        if anecdote[3].validate_on_submit():
-            for key in ['name', 'text', 'category_id']:
-                setattr(anecdote[0], key, getattr(anecdote[3], key).data)
-            anecdote[0].is_published = 0
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('user_anecdotes.html', anecdotes=anecdotes, pagination=pagination,
                            page=page, pages_count=pages_count, search_line=search_line)
@@ -146,7 +140,6 @@ def likes_anecdotes():
     likes = db_sess.query(Like).join(Anecdote).filter(Like.user == current_user, Like.value == 1,
                                                       Anecdote.name.like(f'%{search_line}%')). \
         order_by(Anecdote.created_date.desc())
-    print(likes.all())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, likes)
     anecdotes = [like.anecdote for like in likes]
     anecdotes = search_anecdotes(anecdotes)
