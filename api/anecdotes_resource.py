@@ -140,7 +140,9 @@ class AnecdotesTopResource(Resource):
         if not request.json:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(10).all()
-            return make_response(jsonify({"anecdotes": anecdotes}),
+            res = [{"name": i.name, "text": i.text,
+                    "rating": i.rating} for i in anecdotes]
+            return make_response(jsonify({"anecdotes": res}),
                                  200)
 
         size = request.json.get("size", 10)
@@ -152,7 +154,9 @@ class AnecdotesTopResource(Resource):
         if not period:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(size).all()
-            return make_response(jsonify({"anecdotes": anecdotes}),
+            res = [{"name": i.name, "text": i.text,
+                    "rating": i.rating} for i in anecdotes]
+            return make_response(jsonify({"anecdotes": res}),
                                  200)
 
         try:
@@ -165,7 +169,10 @@ class AnecdotesTopResource(Resource):
             filter(Anecdote.created_date >= datetime.datetime.now() - delta) \
             .order_by(Anecdote.rating.desc()).limit(size).all()
 
-        return make_response(jsonify({"anecdotes": anecdotes}), 200)
+        res = [{"name": i.name, "text": i.text,
+                "rating": i.rating} for i in anecdotes]
+
+        return make_response(jsonify({"anecdotes": res}), 200)
 
 
 class AnecdotesModerateResource(Resource):
