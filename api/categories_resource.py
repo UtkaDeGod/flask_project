@@ -9,7 +9,8 @@ from .auth import auth
 class CategoriesResource(Resource):
     @auth.login_required
     def post(self):
-        if not auth.current_user().is_admin:
+        if not auth.current_user().is_admin or\
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         try:
@@ -20,4 +21,4 @@ class CategoriesResource(Resource):
         except Exception:
             return make_response(jsonify({"error": "bad request"}), 400)
 
-        return make_response(jsonify({"id": category.id}), 201)
+        return make_response(jsonify({"title": category.title}), 201)

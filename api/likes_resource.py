@@ -10,6 +10,9 @@ from .auth import auth
 class LikesResource(Resource):
     @auth.login_required
     def get(self):
+        if auth.current_user().is_banned:
+            return make_response(jsonify({"error": "permission denied"}), 403)
+
         db_sess = db_session.create_session()
         likes = db_sess.query(Like).filter(Like.user_id == auth.current_user().id).all()
 
@@ -21,20 +24,27 @@ class LikesResource(Resource):
 
     @auth.login_required
     def post(self):
+        if auth.current_user().is_banned:
+            return make_response(jsonify({"error": "permission denied"}), 403)
+
         db_sess = db_session.create_session()
         data = request.json
 
         try:
-            if not db_sess.query(Anecdote).get(data["anecdote_id"]).first():
+            anecdote = db_sess.query(Anecdote).get(data["anecdote_id"])
+            if not anecdote:
                 return make_response(jsonify({"error": "anecdote not found"}), 404)
+            if anecdote.is_published != 1:
+                return make_response(jsonify({"error": "anecdote haven't been published"}),
+                                     400)
 
-            like = db_sess.query(Like).filter(Like.anecdote_id == data["anecdote_id"],
+            like = db_sess.query(Like).filter(Like.anecdote_id == anecdote.id,
                                               Like.user_id == auth.current_user().id).first()
 
             if like:
                 like.value = data["value"]
             else:
-                like = Like(anecdote_id=data["anecdote_id"],
+                like = Like(anecdote_id=anecdote.id,
                             user_id=auth.current_user().id,
                             value=data["value"])
                 db_sess.add(like)

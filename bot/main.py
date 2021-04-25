@@ -7,15 +7,14 @@ PERIODS = ["all_time", "year", "month", "week", "day"]
 
 
 def anecdote(update, context):
-    # TODO: норм url вставить
-    response = requests.get("http://127.0.0.2:5000/anecdote")
+    response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdote")
     if response.status_code != 200:
-        update.message.reply_text("Анекдота не будет, БД приняла ислам(ничего не найдено)")
+        update.message.reply_text("Анекдота не будет, БД приняла <религия>(ничего не найдено)")
         return
     anec = response.json()["anecdote"]
     update.message.reply_text(f"Название: {anec['name']}    Жанр: {anec['category']}\n"
-                              f"Автор: {anec['user.name']}\n"
-                              f"{anec['text']}\n"
+                              f"Автор: {anec['user_name']}\n\n"
+                              f"{anec['text']}\n\n"
                               f"Дата создания: {anec['created_date']}\n"
                               f"Рейтинг: {anec['rating']}")
 
@@ -41,16 +40,17 @@ def top(update, context):
 def top_request(update, context):
     query = update.callback_query
     query.answer()
-    if not query.data:
-        response = requests.get("http://127.0.0.2:5000/anecdotes/top")
+    if not int(query.data):
+        response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdotes/top")
     else:
-        response = requests.get("http://127.0.0.2:5000/anecdotes/top",
+        response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdotes/top",
                                 json={"period": PERIODS[int(query.data)]})
     if response.status_code != 200:
-        query.edit_message_text(text="Топа не будет, БД приняла ислам")
+        query.edit_message_text(text=f"Топа не будет, БД приняла <религия>")
         return
     anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1].text}" for i in enumerate(anecdotes))
+    res = "\n\n".join(f"{i[0] + 1}. {i[1]['name']} - ({i[1]['rating']})\n    {i[1]['text']}"
+                      for i in enumerate(anecdotes))
     query.edit_message_text(text=f"{res}")
 
 

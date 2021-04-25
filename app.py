@@ -6,7 +6,6 @@ from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint, jin
 from api import anecdotes_resource, users_resource, comments_resource,\
     categories_resource, likes_resource
 from flask_restful import Api
-import os
 
 
 def create_app(secret_key):
@@ -27,8 +26,9 @@ def create_app(secret_key):
         return None
 
     api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
-    api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes/page")
-    api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate/<int:anecdote_id>")
+    api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes")
+    api.add_resource(anecdotes_resource.AnecdotesTopResource, "/api/anecdotes/top")
+    api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate")
 
     api.add_resource(users_resource.UsersListResource, "/api/users")
     api.add_resource(users_resource.UsersResource, "/api/users/<int:user_id>")
