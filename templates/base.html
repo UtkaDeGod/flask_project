@@ -11,47 +11,82 @@
           integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary">
+<nav class="navbar navbar navbar-dark bg-primary">
     <div class="container-xxl">
-        <a class="navbar-brand" href="/">Ржомба.рф</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+
+        <button class="btn btn-outline-light " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+                aria-controls="offcanvasExample">
+            ☰
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-            <a class="btn btn-warning" href="/anecdote/add">Предложить анекдот</a>
-            <p style="color:#0D6EFD">000</p>
-            {% if current_user.is_authenticated %}
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample"
+             aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas-header">
+
+                {% if current_user.is_authenticated %}
+                    <ui class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ url_for('static', filename=current_user.picture_path) }}" width="50" height="30"
+                                 style="border-radius: 50%"
+                                 class="d-inline-block align-text-center img-thumbnail" id="ava">
+                            <label for="ava" style="color:black;"><big>{{ current_user.name }}</big></label>
+                        </a>
+                        <ul class="list-group">
+                            <br>
+                            <li class="list-group-item"><a class="dropdown-item" href="/user/profile">Мой профиль</a></li>
+                            <li class="list-group-item"><a class="dropdown-item" href="/user/anecdotes">Мои анекдоты</a>
+                            </li>
+                            <li class="list-group-item"><a class="dropdown-item" href="/user/likes">Понравившиеся
+                                анекдоты</a></li>
+                            <li class="list-group-item"><a class="dropdown-item" href="/anecdote/add">Предложить анекдот</a>
+                            </li>
+                            {% if current_user.is_admin %}
+                                <li class="list-group-item"><a class="dropdown-item" href="/admin/edit/categories">Редактировать
+                                    категории</a></li>
+                                <li class="list-group-item"><a class="dropdown-item" href="/admin/edit/users">Редактировать
+                                    пользователей</a></li>
+                                <li class="list-group-item"><a class="dropdown-item" href="/admin">Модерация</a></li>
+                            {% endif %}
+                            <li class="list-group-item"><a class="dropdown-item" href="/logout">Выйти</a></li>
+                        </ul>
+                    </ui>
+                {% else %}
                 <ui class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ url_for('static', filename=current_user.picture_path) }}" width="50" height="30" style="border-radius: 50%"
-                             class="d-inline-block align-text-top img-thumbnail">
-                        {{ current_user.name }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/user/profile">Мой профиль</a></li>
-                        <li><a class="dropdown-item" href="/user/anecdotes">Мои анекдоты</a></li>
-                        <li><a class="dropdown-item" href="/user/likes">Понравившиеся анекдоты</a></li>
-                        {% if current_user.is_admin %}
-                            <li><a class="dropdown-item" href="/admin/edit/categories">Редактировать категории</a></li>
-                            <li><a class="dropdown-item" href="/admin/edit/users">Редактировать пользователей</a></li>
-                            <li><a class="dropdown-item" href="/admin">Модерация</a></li>
-                        {% endif %}
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="/logout">Выйти</a></li>
-                    </ul>
+                    <a class="btn btn-outline-primary" href="/login">Войти</a>
+                    <a class="btn btn-outline-success" href="/register">Зарегистрировться</a>
                 </ui>
-            {% else %}
-                <ui class="nav-item dropdown">
-                    <a class="btn btn-warning" href="/login">Войти</a>
-                    <a class="btn btn-warning" href="/register">Зарегистрировться</a>
-                </ui>
+                {% endif %}
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+            </div>
+
+            {% if categories %}
+                <h3 style="margin-left:15px;">Категории</h3>
+                <div class="offcanvas-body">
+                    <div>
+                        <div class="list-group">
+                            {% for category in categories %}
+                                {% if select_category and category.id == select_category.id %}
+                                    <a class="list-group-item list-group-item-action active" href="/{{ category.id }}">
+                                {% else %}
+                                    <a class="list-group-item list-group-item-action" href="/{{ category.id }}">
+                                {% endif %}
+                                    {{ category.title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
+        <ul class="nav navbar-nav mx-auto">
+            <li class="nav-item">
+                <div><a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}"
+                                                          width="200"
+                                                          height="50"></a></div>
+            </li>
+        </ul>
     </div>
 </nav>
 <br>
