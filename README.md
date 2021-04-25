@@ -42,7 +42,8 @@
 - API собой представляют полную реализацию работы сайта на языке запросов.
 - Примеры запросов увидеть в файле `test_api.py`
 
-#User
+# User
+
 **Регистрация нескольких пользователей. Доступно только админу**
 
     json_request = {"data": [{"name": "Саша",
@@ -91,7 +92,7 @@
     response.status_code -> 200
     response.data -> {"banned_id": 3}
 
-#Anecdote
+# Anecdote
 
 **Создание одного анекдота**
 
@@ -139,7 +140,7 @@
     response.status_code -> 200
     response.data -> {"anecdote": {anecdote_data}}
 
-#Category
+# Category
 
 **Создание категории. Доступно только админам**
 
@@ -150,7 +151,7 @@
     response.status_code -> 201
     response.data -> {"title": "Улитка в баре"}
 
-#Comment
+# Comment
 
 **Создание комментария**
 
@@ -167,7 +168,7 @@
                              auth=('user', 'pass'))
     response.status_code -> 200
 
-#Likes
+# Likes
 
 **Убрать/поставить лайк/дизлайк(в зависимости от параметра `value`)**
 
