@@ -21,4 +21,4 @@ if __name__ == '__main__':
     TOKEN = os.environ.get('TOKEN')
 
     Thread(target=start_app, args=(SECRET_KEY,)).start()
-    Thread(target=start_app, args=(TOKEN,)).start()
+    Thread(target=start_bot, args=(TOKEN,)).start()
