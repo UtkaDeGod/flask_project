@@ -32,33 +32,14 @@
                         <h3>{{ anecdote.name }}</h3>
                         <p>{{ anecdote.text|safe }}</p>
                         <div class="container">
-                            <div class="row">
-                                <div class="col-2">
-                                    <form method="post">
-                                        {{ like_form.hidden_tag() }}
-                                        {{ like_form.anecdote_id(type='hidden') }}
-                                        {{ like_form.value(type='hidden') }}
-                                        <button type="submit" name="submit" class="btn btn-info">
-                                                <img src="{{ url_for('static', filename='img/like.png') }}" width="20" height="20">
-                                            </button>
-                                        <div class="field"></div>
-                                    </form>
-                                </div>
-                                <div class="col-2">
-                                    <form method="post">
-                                        {{ dislike_form.hidden_tag() }}
-                                        {{ dislike_form.anecdote_id(type='hidden') }}
-                                        {{ dislike_form.value(type='hidden') }}
-                                        <button type="submit" name="submit" class="btn btn-danger">
-                                                <img src="{{ url_for('static', filename='img/dislike.png') }}" width="20" height="20">
-                                            </button>
-                                        <div class="field"></div>
-                                    </form>
-                                </div>
-                                <div class="col-2">
-                                    <a type="button" class="btn btn-primary" href="/anecdote/edit/{{ anecdote.id }}">
-                                        Редактровать
-                                    </a>
+                            <div class="col-3">
+                                <div class="btn-group" role="group">
+                                    {% include "likes.html" %}
+                                    <div>
+                                        <a type="button" class="btn btn-primary" href="/anecdote/edit/{{ anecdote.id }}">
+                                            Редактровать
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -67,50 +48,7 @@
             {% endfor %}
         </div>
     </div>
-    <div>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination">
-                {% for button in pagination %}
-                    {% if button != '...' and button not in ['Next', 'Previous'] %}
-                        {% if page == button|int %}
-                            <form method="get" id="pagination" name="pagination">
-                                <li class="page-item active"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
-                                <input type="hidden" value="{{ button }}" id="page" name="page">
-                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
-                            </form>
-                        {% else %}
-                            <form method="get" id="pagination" name="pagination">
-                                <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
-                                <input type="hidden" value="{{ button }}" id="page" name="page">
-                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
-                            </form>
-                        {% endif %}
-                    {% elif button == '...' %}
-                        <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
-                    {% elif button == 'Next' %}
-                        {% if page == pages_count %}
-                            <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
-                        {% else %}
-                            <form method="get" id="pagination" name="pagination">
-                                <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
-                                <input type="hidden" value="{{ page + 1 }}" id="page" name="page">
-                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
-                            </form>
-                        {% endif %}
-                    {% elif button == 'Previous' %}
-                        {% if page == 1 %}
-                            <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
-                        {% else %}
-                            <form method="get" id="pagination" name="pagination">
-                                <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
-                                <input type="hidden" value="{{ page - 1 }}" id="page" name="page">
-                                <input type="hidden" name="search_line" id="search_line" value="{{ search_line }}">
-                            </form>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </nav>
-    </div>
+    <br>
+    {% include "pagination.html" %}
 </div>
 {% endblock %}

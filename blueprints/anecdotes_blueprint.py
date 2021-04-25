@@ -168,6 +168,8 @@ def edit_anecdote(anecdote_id):
         anecdote.text = bleach.clean(edit_anecdote_form.text.data).replace(chr(13), '').replace('\n', '<br>')
         anecdote.category_id = edit_anecdote_form.category.data
         text_anecdote = anecdote.text.replace('<br>', chr(13))
+        anecdote.is_published = 0
         db_sess.commit()
+        return redirect('/user/anecdotes')
     return render_template('edit_anecdote.html', form=edit_anecdote_form, anecdote=anecdote,
                            text_anecdote=text_anecdote)

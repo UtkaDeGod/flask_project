@@ -1,0 +1,41 @@
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% for button in pagination %}
+                {% if button != '...' and button not in ['Next', 'Previous'] %}
+                    {% if page == button|int %}
+                        <form method="get" id="pagination" name="pagination">
+                            <li class="page-item active"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
+                            <input type="hidden" value="{{ button }}" id="page" name="page">
+                        </form>
+                    {% else %}
+                        <form method="get" id="pagination" name="pagination">
+                            <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
+                            <input type="hidden" value="{{ button }}" id="page" name="page">
+                        </form>
+                    {% endif %}
+                {% elif button == '...' %}
+                    <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
+                {% elif button == 'Next' %}
+                    {% if page == pages_count %}
+                        <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
+                    {% else %}
+                        <form method="get" id="pagination" name="pagination">
+                            <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
+                            <input type="hidden" value="{{ page + 1 }}" id="page" name="page">
+                        </form>
+                    {% endif %}
+                {% elif button == 'Previous' %}
+                    {% if page == 1 %}
+                        <li class="page-item disabled"><a type="submit" class="page-link">{{ button }}</a></li>
+                    {% else %}
+                        <form method="get" id="pagination" name="pagination">
+                            <li class="page-item"><button type="submit" class="page-link" id="page_submit" name="page_submit">{{ button }}</button></li>
+                            <input type="hidden" value="{{ page - 1 }}" id="page" name="page">
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+</div>

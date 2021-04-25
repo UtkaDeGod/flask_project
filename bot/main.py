@@ -59,9 +59,8 @@ def help(update, context):
                               "/top - вывод топа анекдотов за определённый промежуток времени")
 
 
-def main():
-    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
-    updater = Updater('TOKEN', use_context=True)
+def main(token):
+    updater = Updater(token, use_context=True)
 
     dp = updater.dispatcher
 
@@ -74,4 +73,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
+    main('TOKEN')
