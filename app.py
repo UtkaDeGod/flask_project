@@ -27,6 +27,7 @@ def load_user(user_id):
 
 api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
 api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes")
+api.add_resource(anecdotes_resource.AnecdotesTopResource, "/api/anecdotes/top")
 api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate")
 
 api.add_resource(users_resource.UsersListResource, "/api/users")
