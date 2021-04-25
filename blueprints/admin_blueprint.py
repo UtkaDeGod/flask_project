@@ -54,24 +54,31 @@ def admin_edit_categories():
     categories = db_sess.query(Category).filter(Category.title.like(f'%{search_line}%'))
     pages_count, categories, pagination = create_buttons_of_pagination(page, categories)
     categories = search_categories(categories)
+    message = ''
 
     if request.method == 'POST' and add_category_form.validate_on_submit():
-        db_sess.add(Category(title=add_category_form.title.data))
-        db_sess.commit()
+        title = add_category_form.title.data
+        if title in [category.title for category in db_sess.query(Category).all()]:
+            message = 'Категория с таким именем уже есть'
+        else:
+            db_sess.add(Category(title=add_category_form.title.data))
+            db_sess.commit()
 
     elif request.method == 'POST':
         category_id = int(request.form[[key for key in request.form if 'id' in key][0]])
         category = categories[category_id]
         if category[1].validate_on_submit():
-            if all([anecdote.category != category[0] for anecdote in db_sess.query(Anecdote).all()]):
+            if any([anecdote.category == category[0] for anecdote in db_sess.query(Anecdote).all()]):
+                message = 'К этой категории привязаны анекдоты'
+            else:
                 db_sess.delete(category[0])
                 db_sess.commit()
 
     categories = db_sess.query(Category).filter(Category.title.like(f'%{search_line}%'))
     pages_count, categories, pagination = create_buttons_of_pagination(page, categories)
     categories = search_categories(categories)
-    context = {'categories': categories, 'add_category_form': add_category_form, 'search_line': search_line,
-               'pagination': pagination, 'page_count': pages_count, 'page': page}
+    context = {'edit_categories': categories, 'add_category_form': add_category_form, 'search_line': search_line,
+               'pagination': pagination, 'page_count': pages_count, 'page': page, 'message': message}
     return make_response(render_template('admin_edit_categories.html', **context))
 
 

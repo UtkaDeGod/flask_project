@@ -26,6 +26,9 @@ def logout():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect('/')
+
     form = LoginForm()
     context = {'form': form, 'title': 'Авторизация'}
     if form.validate_on_submit():
@@ -43,17 +46,21 @@ def login():
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect('/')
+
     form = RegisterForm()
     context = {'form': form, 'title': 'Регистрация'}
     if form.validate_on_submit():
         db_sess = create_session()
-        if form.repeat_password.data != form.hashed_password.data:
+        password = form.hashed_password.data
+        if form.repeat_password.data != password:
             return render_template('register.html', message='Пароли не совпадают', **context)
         if form.email.data in [user.email for user in db_sess.query(User).all()]:
             return render_template('register.html', message='Email уже занят', **context)
-        if len(form.hashed_password.data) < 8:
+        if len(password) < 8:
             return render_template('register.html', message='Длина пароля должна быть не менее 8 символов', **context)
-        if not form.hashed_password.data.isalnum():
+        if not any(map(str.isdigit, password)) or not any(map(str.isalpha, password)):
             return render_template('register.html', message='Пароль должен состоять из букв и цифр', **context)
         user = User(name=form.name.data, email=form.email.data)
         user.set_password(form.hashed_password.data)
