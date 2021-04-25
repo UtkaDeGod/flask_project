@@ -26,12 +26,17 @@ class AnecdotesResource(Resource):
 
         rand_id = random.choice(ids)
         anecdote = db_sess.query(Anecdote).get(rand_id)
-        return make_response(jsonify({"anecdote": anecdote.to_dict(only=(
-            "text", "rating", "name", "category", "created_date", "user.name"
-        ))}), 200)
+        return make_response(jsonify({"anecdote": {"text": anecdote.text,
+                                                   "rating": anecdote.rating,
+                                                   "name": anecdote.name,
+                                                   "category": anecdote.category.title,
+                                                   "created_date": anecdote.created_date,
+                                                   "user_name": anecdote.user.name}}), 200)
 
     @auth.login_required
     def post(self):
+        if auth.current_user().is_banned:
+            return make_response(jsonify({"error": "permission denied"}), 403)
         data = request.json
 
         if not data:
@@ -44,17 +49,17 @@ class AnecdotesResource(Resource):
         db_sess = db_session.create_session()
 
         try:
-            category_id = db_sess.query(Category) \
+            category = db_sess.query(Category) \
                 .filter(Category.title == data["category"]).first()
 
-            if not category_id:
+            if not category:
                 return make_response(jsonify({"error": "category not found"}), 404)
 
             anecdote = Anecdote(name=data["name"],
                                 text=data["text"],
                                 user_id=auth.current_user().id,
                                 created_date=datetime.datetime.now(),
-                                category_id=category_id)
+                                category_id=category.id)
             db_sess.add(anecdote)
             db_sess.commit()
         except Exception:
@@ -80,6 +85,9 @@ class AnecdotesListResource(Resource):
 
     @auth.login_required
     def post(self):
+        if auth.current_user().is_banned:
+            return make_response(jsonify({"error": "permission denied"}), 403)
+
         if not request.json:
             return make_response(jsonify({"error": "parameters are required"}), 400)
         elif not request.json.get("data", None):
@@ -97,19 +105,20 @@ class AnecdotesListResource(Resource):
                 continue
 
             try:
-                category_id = db_sess.query(Category) \
+                category = db_sess.query(Category) \
                     .filter(Category.title == data["category"]).first()
 
-                if not category_id:
-                    return make_response(jsonify({"error": "category not found"}), 404)
+                if not category:
+                    invalid.append({**data})
+                    continue
 
                 anecdote = Anecdote(name=data["name"],
                                     text=data["text"],
                                     user_id=auth.current_user().id,
                                     created_date=datetime.datetime.now(),
-                                    category_id=category_id)
+                                    category_id=category.id)
                 db_sess.add(anecdote)
-                valid.append({"id": anecdote.id})
+                valid.append({"name": anecdote.name})
             except Exception:
                 invalid.append({**data})
 
@@ -131,7 +140,9 @@ class AnecdotesTopResource(Resource):
         if not request.json:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(10).all()
-            return make_response(jsonify({"anecdotes": anecdotes}),
+            res = [{"name": i.name, "text": i.text,
+                    "rating": i.rating} for i in anecdotes]
+            return make_response(jsonify({"anecdotes": res}),
                                  200)
 
         size = request.json.get("size", 10)
@@ -143,7 +154,9 @@ class AnecdotesTopResource(Resource):
         if not period:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(size).all()
-            return make_response(jsonify({"anecdotes": anecdotes}),
+            res = [{"name": i.name, "text": i.text,
+                    "rating": i.rating} for i in anecdotes]
+            return make_response(jsonify({"anecdotes": res}),
                                  200)
 
         try:
@@ -156,13 +169,17 @@ class AnecdotesTopResource(Resource):
             filter(Anecdote.created_date >= datetime.datetime.now() - delta) \
             .order_by(Anecdote.rating.desc()).limit(size).all()
 
-        return make_response(jsonify({"anecdotes": anecdotes}), 200)
+        res = [{"name": i.name, "text": i.text,
+                "rating": i.rating} for i in anecdotes]
+
+        return make_response(jsonify({"anecdotes": res}), 200)
 
 
 class AnecdotesModerateResource(Resource):
     @auth.login_required
     def patch(self):
-        if not auth.current_user().is_admin:
+        if not auth.current_user().is_admin or\
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         try:
@@ -181,7 +198,8 @@ class AnecdotesModerateResource(Resource):
 
     @auth.login_required
     def get(self):
-        if not auth.current_user().is_admin:
+        if not auth.current_user().is_admin or\
+                auth.current_user().is_banned:
             return make_response(jsonify({"error": "permission denied"}), 403)
 
         db_sess = db_session.create_session()
@@ -189,6 +207,6 @@ class AnecdotesModerateResource(Resource):
 
         resp = []
         for anecdote in anecdotes:
-            resp.append({anecdote.to_dict(only=("id", "text"))})
+            resp.append({anecdote.id, anecdote.text})
 
         return make_response(jsonify({"anecdotes": resp}), 200)

@@ -6,26 +6,29 @@ import sqlalchemy.ext.declarative as dec
 SqlAlchemyBase = dec.declarative_base()
 
 __factory = None
+__engine = None
 
 
 def global_init(db_file):
-    global __factory
+    global __factory, __engine
 
     if __factory:
-        return
+        return __engine
 
     if not db_file or not db_file.strip():
-        raise Exception('Необходимо указать файл базы данных.')
+        raise Exception("Необходимо указать файл базы данных.")
 
     conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
-    print(f'Подключение к базе данных по адресу {conn_str}')
+    print(f"Подключение к базе данных по адресу {conn_str}")
 
     engine = sa.create_engine(conn_str, echo=False)
-    __factory = orm.sessionmaker(bind=engine)
+    __factory = orm.sessionmaker(bind=engine, autoflush=False)
 
     from . import __all_models
 
     SqlAlchemyBase.metadata.create_all(engine)
+    __engine = engine
+    return __engine
 
 
 def create_session() -> Session:
