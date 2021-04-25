@@ -49,7 +49,7 @@ def top_request(update, context):
         query.edit_message_text(text=f"Топа не будет, БД приняла <религия>")
         return
     anecdotes = response.json()["anecdotes"]
-    res = "\n\n".join(f"{i[0] + 1}. {i[1]['name']} - {i[1]['rating']}\n   {i[1]['text']}"
+    res = "\n\n".join(f"{i[0] + 1}. {i[1]['name']} - ({i[1]['rating']})\n    {i[1]['text']}"
                       for i in enumerate(anecdotes))
     query.edit_message_text(text=f"{res}")
 
