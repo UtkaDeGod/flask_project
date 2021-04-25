@@ -207,6 +207,6 @@ class AnecdotesModerateResource(Resource):
 
         resp = []
         for anecdote in anecdotes:
-            resp.append({anecdote.to_dict(only=("id", "text"))})
+            resp.append({anecdote.id, anecdote.text})
 
         return make_response(jsonify({"anecdotes": resp}), 200)
