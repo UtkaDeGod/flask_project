@@ -2,12 +2,12 @@ import base64
 import json
 import pytest
 
-from app import create_test_api_app
+from app import create_app
 from data.db_session import global_init, SqlAlchemyBase, create_session
 from models.users import User
 
 __engine = None
-app = create_test_api_app("secret_key")
+app = create_app("secret_key")
 
 
 def clear_db(engine):
@@ -48,9 +48,9 @@ def test_users_wrong_registration_fields(client):
     response = client.post("/api/users", json=json_request,
                            headers={"Authorization": "Basic " + credentials})
     assert response.status_code == 400
-    assert json.loads(response.data) == {"validation_error":
-                                             {"bad_params": [{"name": "Маша",
-                                                              "password": "password1"}]}}
+    assert json.loads(response.data) == {
+        "validation_error": {"bad_params": [{"name": "Маша", "password": "password1"}]}
+    }
 
 
 def test_correct_registration_users(client):

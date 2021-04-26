@@ -7,9 +7,8 @@ from forms.like_form import LikeForm
 from models.anecdotes import Anecdote
 from models.categories import Category
 from models.comments import Comment
-from models.likes import Like
 from datetime import datetime
-from data.system_functions import create_buttons_of_pagination, create_list_anecdotes_for_index
+from data.system_functions import create_buttons_of_pagination, search_anecdotes, check_like
 import bleach
 
 blueprint = Blueprint(
@@ -27,27 +26,14 @@ def index():
     anecdotes = db_sess.query(Anecdote).filter(Anecdote.is_published == 1).order_by(Anecdote.created_date.desc())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, anecdotes)
 
-    anecdotes = create_list_anecdotes_for_index(anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
     categories = db_sess.query(Category).all()
 
     if request.method == 'POST':
-        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
-        anecdote = anecdotes[anecdote_id]
+        anecdote_id = request.form.get('anecdote_id', None)
+        anecdote = anecdotes[int(anecdote_id)] if anecdote_id is not None else None
+        check_like(db_sess, anecdote)
 
-        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
-            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
-            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
-            if like is None:
-                like = Like(user_id=current_user.id, anecdote_id=anecdote_id, value=0)
-            if like is not None and like.value == 0:
-                anecdote[0].rating += int(value)
-            elif like is not None and like.value != int(value):
-                anecdote[0].rating += int(value) * 2
-            elif like is not None and like.value == int(value):
-                anecdote[0].rating -= int(value)
-            like.value = value if like.value != int(value) else 0
-            db_sess.add(like)
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count,
                            categories=categories)
@@ -63,27 +49,14 @@ def index_with_category_id(category_id):
         order_by(Anecdote.created_date.desc())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, anecdotes)
 
-    anecdotes = create_list_anecdotes_for_index(anecdotes)
+    anecdotes = search_anecdotes(anecdotes)
     categories = db_sess.query(Category).all()
 
     if request.method == 'POST':
-        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
-        anecdote = anecdotes[anecdote_id]
+        anecdote_id = request.form.get('anecdote_id', None)
+        anecdote = anecdotes[int(anecdote_id)] if anecdote_id is not None else None
+        check_like(db_sess, anecdote)
 
-        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
-            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
-            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
-            if like is None:
-                like = Like(user_id=current_user.id, anecdote_id=anecdote_id, value=0)
-            if like is not None and like.value == 0:
-                anecdote[0].rating += int(value)
-            elif like is not None and like.value != int(value):
-                anecdote[0].rating += int(value) * 2
-            elif like is not None and like.value == int(value):
-                anecdote[0].rating -= int(value)
-            like.value = value if like.value != int(value) else 0
-            db_sess.add(like)
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('index.html', pagination=pagination, anecdotes=anecdotes, page=page, pages_count=pages_count,
                            categories=categories, select_category=select_category)
@@ -113,25 +86,13 @@ def anecdote_page(anecdote_id):
     anecdote = db_sess.query(Anecdote).get(anecdote_id)
     context = {}
     if anecdote is not None:
-        like_form = LikeForm(prefix='like')
-        dislike_form = LikeForm(prefix='dislike')
+        like_form = LikeForm()
+        dislike_form = LikeForm()
         comment_form = CommentForm(prefix='comment')
         like_form.value.data = 1
         dislike_form.value.data = -1
-        if like_form.validate_on_submit() or dislike_form.validate_on_submit():
-            value = like_form.value.data if like_form.validate_on_submit() else dislike_form.value.data
-            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
-            if like is None:
-                like = Like(user_id=current_user.id, anecdote_id=anecdote_id, value=0)
-            if like is not None and like.value == 0:
-                anecdote.rating += int(value)
-            elif like is not None and like.value != int(value):
-                anecdote.rating += int(value) * 2
-            elif like is not None and like.value == int(value):
-                anecdote.rating -= int(value)
-            like.value = value if like.value != int(value) else 0
-            db_sess.add(like)
-            db_sess.commit()
+        check_like(db_sess, [anecdote, like_form, dislike_form])
+
         if comment_form.validate_on_submit():
             text = bleach.clean(comment_form.text.data).replace(chr(13), '').replace('\n', '<br>')
             comment = Comment(text=text, user_id=current_user.id, anecdote_id=anecdote_id, created_date=datetime.now())

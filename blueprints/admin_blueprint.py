@@ -30,9 +30,9 @@ def admin_edit_users():
     users = search_users(users)
 
     if request.method == 'POST':
-        user_id = int(request.form[[key for key in request.form if 'id' in key][0]])
-        user = users[user_id]
-        if user[1].validate_on_submit():
+        user_id = request.form.get('id', None)
+        user = users[int(user_id)] if user_id is not None else None
+        if user is not None and user[1].validate_on_submit():
             user[0].is_admin, user[0].is_banned = user[1].is_admin.data, user[1].is_banned.data
             db_sess.commit()
             return redirect(f'#{user[0].id}')
@@ -65,9 +65,9 @@ def admin_edit_categories():
             db_sess.commit()
 
     elif request.method == 'POST':
-        category_id = int(request.form[[key for key in request.form if 'id' in key][0]])
-        category = categories[category_id]
-        if category[1].validate_on_submit():
+        category_id = request.form.get('id', None)
+        category = categories[int(category_id)] if category_id is not None else None
+        if category is not None and category[1].validate_on_submit():
             if any([anecdote.category == category[0] for anecdote in db_sess.query(Anecdote).all()]):
                 message = 'К этой категории привязаны анекдоты'
             else:
@@ -95,12 +95,10 @@ def admin_moderation():
     anecdotes = create_list_anecdotes_for_moderation(anecdotes)
 
     if request.method == 'POST':
-        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
-        anecdote = anecdotes[anecdote_id]
-        if anecdote[1].validate_on_submit():
-            anecdote[0].is_published = int(anecdote[1].value.data)
-        if anecdote[2].validate_on_submit():
-            anecdote[0].is_published = int(anecdote[2].value.data)
+        anecdote_id = request.form.get('anecdote_id', None)
+        anecdote = anecdotes[int(anecdote_id)] if anecdote_id is not None else None
+        value = int(request.form.get('value'))
+        anecdote[0].is_published = value
         db_sess.commit()
     anecdotes = db_sess.query(Anecdote).filter(Anecdote.is_published == 0).order_by(Anecdote.created_date.desc())
     pages_count, anecdotes, pagination = create_buttons_of_pagination(page, anecdotes)

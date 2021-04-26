@@ -46,7 +46,7 @@ def top_request(update, context):
         response = requests.get("http://rzhomba-rf.herokuapp.com/api/anecdotes/top",
                                 json={"period": PERIODS[int(query.data)]})
     if response.status_code != 200:
-        query.edit_message_text(text=f"Топа не будет, БД приняла <религия>")
+        query.edit_message_text(text="Топа не будет, БД приняла <религия>")
         return
     anecdotes = response.json()["anecdotes"]
     res = "\n\n".join(f"{i[0] + 1}. {i[1]['name']} - ({i[1]['rating']})\n    {i[1]['text']}"

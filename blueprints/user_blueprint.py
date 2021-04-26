@@ -8,7 +8,7 @@ from forms.register_form import RegisterForm
 from forms.edit_user_form import EditUserForm
 from models.likes import Like
 from PIL import Image
-from data.system_functions import search_anecdotes, create_buttons_of_pagination
+from data.system_functions import search_anecdotes, create_buttons_of_pagination, check_like
 
 blueprint = Blueprint(
     'user',
@@ -84,23 +84,10 @@ def user_anecdotes():
     anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
-        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
-        anecdote = anecdotes[anecdote_id]
+        anecdote_id = request.form.get('anecdote_id', None)
+        anecdote = anecdotes[int(anecdote_id)] if anecdote_id is not None else None
+        check_like(db_sess, anecdote)
 
-        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
-            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
-            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
-            if like is None:
-                like = Like(user_id=current_user.id, anecdote_id=anecdote_id, value=0)
-            if like is not None and like.value == 0:
-                anecdote[0].rating += int(value)
-            elif like is not None and like.value != int(value):
-                anecdote[0].rating += int(value) * 2
-            elif like is not None and like.value == int(value):
-                anecdote[0].rating -= int(value)
-            like.value = value if like.value != int(value) else 0
-            db_sess.add(like)
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('user_anecdotes.html', anecdotes=anecdotes, pagination=pagination,
                            page=page, pages_count=pages_count, search_line=search_line)
@@ -124,7 +111,7 @@ def user_profile():
                     corr = (height - width) // 2
                     im = im.crop((0, corr, width, corr + width))
                 im.save(f'./static/img/avatars/{user.id}.png')
-                user.picture_path = f'./img/avatars/{user.id}.png'
+                user.picture_path = f'img/avatars/{user.id}.png'
             user.name = form.name.data
             user.email = form.email.data
             db_sess.commit()
@@ -152,23 +139,10 @@ def likes_anecdotes():
     anecdotes = search_anecdotes(anecdotes)
 
     if request.method == 'POST':
-        anecdote_id = int(request.form[[key for key in request.form if 'anecdote_id' in key][0]])
-        anecdote = anecdotes[anecdote_id]
+        anecdote_id = request.form.get('anecdote_id', None)
+        anecdote = anecdotes[int(anecdote_id)] if anecdote_id is not None else None
+        check_like(db_sess, anecdote)
 
-        if anecdote[1].validate_on_submit() or anecdote[2].validate_on_submit():
-            value = anecdote[1].value.data if anecdote[1].validate_on_submit() else anecdote[2].value.data
-            like = db_sess.query(Like).filter(Like.user_id == current_user.id, Like.anecdote_id == anecdote_id).first()
-            if like is None:
-                like = Like(user_id=current_user.id, anecdote_id=anecdote_id, value=0)
-            if like is not None and like.value == 0:
-                anecdote[0].rating += int(value)
-            elif like is not None and like.value != int(value):
-                anecdote[0].rating += int(value) * 2
-            elif like is not None and like.value == int(value):
-                anecdote[0].rating -= int(value)
-            like.value = value if like.value != int(value) else 0
-            db_sess.add(like)
-            db_sess.commit()
         return redirect(f'#{anecdote_id}')
     return render_template('user_like_anecdotes.html', anecdotes=anecdotes, pagination=pagination,
                            page=page, pages_count=pages_count, search_line=search_line)

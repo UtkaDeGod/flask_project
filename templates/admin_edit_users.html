@@ -13,8 +13,8 @@
         </ul>
         <br>
         {% for user, user_form in users.values() %}
-            <div class="card" id="{{ user.id }}">
-                <form method="post" id="form" action="">
+            <div class="card">
+                <form method="post" action="">
                     {{ user_form.hidden_tag() }}
                     <div class="card-header">
                         <img src="{{ url_for('static', filename=user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
@@ -23,15 +23,15 @@
                     <div class="card-body">
                             {{ user_form.id(type="hidden") }}
                             {% if user.is_admin %}
-                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox" checked > админ
+                                <input name="is_admin" type="checkbox" checked > админ
                             {% else %}
-                                <input name="user_edit_form{{ user.id }}-is_admin" type="checkbox"> админ
+                                <input name="is_admin" type="checkbox"> админ
                             {% endif %}
 
                             {% if user.is_banned %}
-                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox" checked> забанен
+                                <input name="is_banned" type="checkbox" checked> забанен
                             {% else %}
-                                <input name="user_edit_form{{ user.id }}-is_banned" type="checkbox"> забанен
+                                <input name="is_banned" type="checkbox"> забанен
                             {% endif %}
                             {{ user_form.submit(type="submit", class="btn btn-primary") }}
                     </div>

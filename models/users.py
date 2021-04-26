@@ -13,7 +13,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    picture_path = sqlalchemy.Column(sqlalchemy.String, default='./img/avatars/default.jpg')
+    picture_path = sqlalchemy.Column(sqlalchemy.String, default='img/avatars/default.jpg')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_banned = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
