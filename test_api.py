@@ -2,11 +2,12 @@ import base64
 import json
 import pytest
 
-from app import app
+from app import create_app
 from data.db_session import global_init, SqlAlchemyBase, create_session
 from models.users import User
 
 __engine = None
+app = create_app("secret_key")
 
 
 def clear_db(engine):
@@ -129,7 +130,7 @@ def test_user_get_wrong_id(client):
 
 
 def test_user_correct_get(client):
-    credentials = base64.b64encode(b"test3@mail.ru:password3").decode("utf-8")
+    credentials = base64.b64encode(b"admin@mail.ru:admin12345").decode("utf-8")
     response = client.get("/api/users/4",
                           headers={"Authorization": "Basic " + credentials})
     assert response.status_code == 200
