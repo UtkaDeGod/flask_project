@@ -2,12 +2,12 @@ import base64
 import json
 import pytest
 
-from app import create_app
+from app import create_test_api_app
 from data.db_session import global_init, SqlAlchemyBase, create_session
 from models.users import User
 
 __engine = None
-app = create_app("secret_key")
+app = create_test_api_app("secret_key")
 
 
 def clear_db(engine):

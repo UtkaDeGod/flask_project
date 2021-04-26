@@ -42,12 +42,15 @@ class LikesResource(Resource):
                                               Like.user_id == auth.current_user().id).first()
 
             if like:
+                anecdote.rating += like.value * -1
                 like.value = data["value"]
+                anecdote.rating += data["value"]
             else:
                 like = Like(anecdote_id=anecdote.id,
                             user_id=auth.current_user().id,
                             value=data["value"])
                 db_sess.add(like)
+                anecdote.rating += data["value"]
         except Exception:
             return make_response(jsonify({"error": "bad request"}), 400)
 

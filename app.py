@@ -46,6 +46,28 @@ def create_app(secret_key):
     return app
 
 
+def create_test_api_app(secret_key):
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = secret_key
+
+    api = Api(app)
+
+    api.add_resource(anecdotes_resource.AnecdotesResource, "/api/anecdote")
+    api.add_resource(anecdotes_resource.AnecdotesListResource, "/api/anecdotes")
+    api.add_resource(anecdotes_resource.AnecdotesTopResource, "/api/anecdotes/top")
+    api.add_resource(anecdotes_resource.AnecdotesModerateResource, "/api/anecdotes/moderate")
+
+    api.add_resource(users_resource.UsersListResource, "/api/users")
+    api.add_resource(users_resource.UsersResource, "/api/users/<int:user_id>")
+    api.add_resource(users_resource.UsersRegistrationResource, "/api/users/personal_register")
+
+    api.add_resource(categories_resource.CategoriesResource, "/api/categories")
+    api.add_resource(comments_resource.CommentsResource, "/api/comments")
+    api.add_resource(likes_resource.LikesResource, "/api/likes")
+
+    return app
+
+
 if __name__ == '__main__':
     app = create_app('aleksey_lox228)))')
     app.run(port=5000, host='127.0.0.2')
