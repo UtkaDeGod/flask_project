@@ -69,7 +69,6 @@ def main(token):
     dp.add_handler(CommandHandler("top", top))
     updater.dispatcher.add_handler(CallbackQueryHandler(top_request))
     updater.start_polling()
-    updater.idle()
 
 
 if __name__ == '__main__':

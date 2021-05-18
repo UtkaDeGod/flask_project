@@ -13,9 +13,9 @@ def start_app(secret_key):
     db_port = os.environ.get('DB_PORT')
     db_name = os.environ.get('DB_NAME')
 
-    global_init('mysql', create_conn_args_string(login, password, db_host, db_port, db_name))
     app = create_app(secret_key)
-    app.run(host='0.0.0.0', port=port)
+    global_init('mysql', create_conn_args_string(login, password, db_host, db_port, db_name))
+    app.run(host='127.0.0.1', port=port)
 
 
 def start_bot(token):
