@@ -1,5 +1,4 @@
 from data.db_session import global_init, create_conn_args_string
-from threading import Thread
 from app import create_app
 from bot.main import main
 import asyncio
@@ -33,7 +32,3 @@ if __name__ == '__main__':
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main_heroku())
-
-
-    #Thread(target=start_app, args=(SECRET_KEY,)).start()
-    #Thread(target=start_bot, args=(TOKEN,)).start()
