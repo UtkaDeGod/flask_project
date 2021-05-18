@@ -9,16 +9,22 @@ __factory = None
 __engine = None
 
 
-def global_init(db_file):
+def create_conn_args_string(login, password, host, port, db_name):
+    return f'{login.strip()}:{password.rstrip()}@{host}:{port}/{db_name}'
+
+
+def global_init(mode, conn_args_string):
     global __factory, __engine
 
     if __factory:
         return __engine
 
-    if not db_file or not db_file.strip():
-        raise Exception("Необходимо указать файл базы данных.")
-
-    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
+    if mode == 'sqlite':
+        conn_str = f'sqlite:///{conn_args_string.strip()}?check_same_thread=False'
+    elif mode == 'mysql':
+        conn_str = f'mysql://{conn_args_string.strip()}'
+    else:
+        raise Exception('unknown type of base')
     print(f"Подключение к базе данных по адресу {conn_str}")
 
     engine = sa.create_engine(conn_str, echo=False)

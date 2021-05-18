@@ -10,10 +10,10 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    picture_path = sqlalchemy.Column(sqlalchemy.String, default='img/avatars/default.jpg')
+    name = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    email = sqlalchemy.Column(sqlalchemy.String(255), unique=True, nullable=False)
+    hashed_password = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    picture_path = sqlalchemy.Column(sqlalchemy.String(255), default='img/avatars/default.jpg')
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_banned = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 

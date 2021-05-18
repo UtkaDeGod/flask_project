@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
-from data.db_session import create_session, global_init
+from data.db_session import create_session, global_init, SqlAlchemyBase
 from models.users import User
 from blueprints import admin_blueprint, user_blueprint, anecdotes_blueprint, jinja_filters
 from api import anecdotes_resource, users_resource, comments_resource, categories_resource, likes_resource
@@ -45,6 +45,6 @@ def create_app(secret_key):
 
 
 if __name__ == '__main__':
-    global_init('db/anecdotes.db')
+    global_init('sqlite', './db/base.db')
     app = create_app('aleksey_lox228)))')
     app.run(port=5000, host='127.0.0.2')

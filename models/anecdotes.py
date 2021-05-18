@@ -8,8 +8,8 @@ class Anecdote(SqlAlchemyBase):
     __tablename__ = 'anecdotes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    text = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    name = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    text = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'))
