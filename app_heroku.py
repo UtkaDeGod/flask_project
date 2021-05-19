@@ -1,11 +1,9 @@
 from data.db_session import global_init, create_conn_args_string
 from app import create_app
-from bot.main import main
-import asyncio
 import os
 
 
-async def start_app(secret_key):
+def start_app(secret_key):
     port = int(os.environ.get('PORT', 5000))
     login = os.environ.get('LOGIN')
     password = os.environ.get('PASSWORD')
@@ -18,17 +16,7 @@ async def start_app(secret_key):
     app.run(host='0.0.0.0', port=port)
 
 
-async def start_bot(token):
-    main(token)
-
-
-async def main_heroku():
-    tasks = [asyncio.ensure_future(start_app(SECRET_KEY)), asyncio.ensure_future(start_bot(TOKEN))]
-    await asyncio.gather(*tasks)
-
 if __name__ == '__main__':
     SECRET_KEY = os.environ.get('SECRET_KEY')
     TOKEN = os.environ.get('TOKEN')
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    asyncio.run(main_heroku())
+    start_app(SECRET_KEY)
