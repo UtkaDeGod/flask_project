@@ -27,6 +27,7 @@ class AnecdotesResource(Resource):
         rand_id = random.choice(ids)
         anecdote = db_sess.query(Anecdote).get(rand_id)
         return make_response(jsonify({"anecdote": {"text": anecdote.text,
+                                                   "id": rand_id
                                                    "rating": anecdote.rating,
                                                    "name": anecdote.name,
                                                    "category": anecdote.category.title,
@@ -140,7 +141,7 @@ class AnecdotesTopResource(Resource):
         if not request.json:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(10).all()
-            res = [{"name": i.name, "text": i.text,
+            res = [{"name": i.name, "text": i.text, "id": i.id,
                     "rating": i.rating} for i in anecdotes]
             return make_response(jsonify({"anecdotes": res}),
                                  200)
@@ -154,7 +155,7 @@ class AnecdotesTopResource(Resource):
         if not period:
             anecdotes = db_sess.query(Anecdote). \
                 order_by(Anecdote.rating.desc()).limit(size).all()
-            res = [{"name": i.name, "text": i.text,
+            res = [{"name": i.name, "text": i.text, "id": i.id,
                     "rating": i.rating} for i in anecdotes]
             return make_response(jsonify({"anecdotes": res}),
                                  200)
@@ -169,7 +170,7 @@ class AnecdotesTopResource(Resource):
             filter(Anecdote.created_date >= datetime.datetime.now() - delta) \
             .order_by(Anecdote.rating.desc()).limit(size).all()
 
-        res = [{"name": i.name, "text": i.text,
+        res = [{"name": i.name, "text": i.text, "id": i.id,
                 "rating": i.rating} for i in anecdotes]
 
         return make_response(jsonify({"anecdotes": res}), 200)
