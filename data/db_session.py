@@ -27,7 +27,7 @@ def global_init(mode, conn_args_string):
         raise Exception('unknown type of base')
     print(f"Подключение к базе данных по адресу {conn_str}")
 
-    engine = sa.create_engine(conn_str, echo=False)
+    engine = sa.create_engine(conn_str, echo=False, pool_size=50, max_overflow=0)
     __factory = orm.sessionmaker(bind=engine, autoflush=False)
 
     from . import __all_models
