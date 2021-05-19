@@ -27,7 +27,7 @@ class AnecdotesResource(Resource):
         rand_id = random.choice(ids)
         anecdote = db_sess.query(Anecdote).get(rand_id)
         return make_response(jsonify({"anecdote": {"text": anecdote.text,
-                                                   "id": rand_id
+                                                   "id": rand_id,
                                                    "rating": anecdote.rating,
                                                    "name": anecdote.name,
                                                    "category": anecdote.category.title,
